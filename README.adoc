@@ -1,0 +1,155 @@
+Netbeans Edit Externally
+=======================
+Marco Herrn <marco@mherrn.de>
+2019-08-22
+:toc:
+:homepage: https://github.com/hupfdule/nb-edit-externally
+:download-page: https://github.com/hupfdule/nb-edit-externally/releases
+:license-link: https://github.com/hupfdule/nb-edit-externally/blob/master/LICENSE.txt
+:source-highlighter: prettify
+:plugin-version: 1.0.0
+
+Netbeans Edit Externally
+
+Allows opening the currently edited file in an external editor.
+
+
+About
+-----
+
+Allows opening the currently edited file in an external editor.
+
+Its main purpose is to open the currently edited file at the exact same cursor
+position as in Netbeans to execute some complex editing action that is not
+easily possible within Netbeans itself.
+
+The command to open the file in an external editor must be supplied by the
+user and allows placeholders to specify the location of the cursor to be
+able to jump to the same location of the cursor in Netbeans' editor.
+
+A fallback command can be specified for opening file for which no editor
+window is open. This command doesn't support all the placeholders, but
+allows editing a file directly from the Projects nodes.
+
+
+Usage
+-----
+
+This plugin adds an Entry `Edit Externally` to the following menus:
+
+ * Main Menu `Tools`
+ * Context Menu of each editor window
+ * Submenu `Tools` in the context popup menu of each node in the Projects view
+
+Additionally an icon is placed in the `File` section of the main toolbar
+and into the editors toolbar:
+image:src/main/resources/de/poiu/nbee/icons/edit-externally32.png[Icon]
+
+Configuration
+-------------
+
+The configuration panel can be found at
+`Tools / Options / Miscellaneous / Edit Externally`.
+
+There are two commands to be configured:
+
+ - Edit externally
+ - Open externally
+
+This plugin decides which one to call based on the information it has about
+the currently selected file. If an open editor for the file is found, the
+`Edit externally` action is called as it allows including cursor location
+information in the command.
+
+If no associated editor is found, the `Open externally` action is called
+instead.
+
+
+=== Placeholders
+
+The following placeholders can be used for both commands:
+
+[horizontal]
+${file}:: The absolute path to the file.
+${fileName}:: The file name of the file.
+${fileBasename}:: The file name of the file without extension.
+${fileExt}:: The file extension of the file.
+
+The following placeholders can additionally be used for the `Edit
+externally` action:
+
+[horizontal]
+${line0}:: The line of the cursor location (0-based).
+${line}:: The line of the cursor location (1-based).
+${column0}:: The column of the cursor location (0-based).
+${column}:: The column of the cursor location (1-based).
+//${selectedText}:: The currently selected text.
+//${selectionStart}:: The location of the selection start (number of chars).
+//${selectionEnd}:: The location of the selection end (number of chars).
+
+
+=== Quoting and Escaping
+
+To allow command line arguments with spaces they can be enclosed within
+single or double quotes. It is also possible to escape a single space or
+quote character by preceding it with a backslash.
+
+Backslashes take precedence over quote. Therefore it is possible to have
+quotes as part of a quoted string like in this example:
+
+
+----
+myprogram 'my \'quoted\' string'
+----
+
+
+=== Examples
+
+To call `vim` in an `urxvt` terminal the following configuration can be
+used:
+
+Edit externally:: `urxvt -e vim ${file} "+call cursor(${line}, ${column})"`
+Open externally:: `urxvt -e vim ${file}`
+
+
+=== Keybindings
+
+This plugin registers an action with the name „Edit Externally“ in
+Netbeans. It is recommended to provide a custom keybinding for that action
+for faster access.
+
+
+Known Issues
+------------
+
+* Multiple selected files are not supported at the moment.
++
+If multiple files are selected in the Node tree, only one of them will get
+opened in the configured editor.
+
+
+Related plugins
+---------------
+
+This plugin is inspired by the following existing plugins.
+
+QuickOpener::
+  http://plugins.netbeans.org/plugin/62668/quickopener
++
+This plugin shares some of the same ideas and does provides some
+additional actions. Unfortunately it is quite buggy and not very handy.
+
+Use System Desktop::
+  http://plugins.netbeans.org/plugin/57462/netbeans-use-system-desktop
++
+This plugin provides actions to open the currently selected file via the
+operating systems default application. It lacks the ability to jump to a
+specific cursor location, but may be used together with `Edit Externally`.
+
+
+
+License
+-------
+
+This plugins is licensed under the terms of the link:{license-link}[Apache license
+2.0].

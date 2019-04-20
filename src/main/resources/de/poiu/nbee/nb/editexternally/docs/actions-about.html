@@ -1,0 +1,296 @@
+<!--
+  Copyright 2019 Marco Herrn.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<html>
+  <head>
+    <title>About Edit Externally</title>
+    <link rel="stylesheet" href="nbdocs://org.netbeans.modules.usersguide/org/netbeans/modules/usersguide/ide.css" type="text/css">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <h2>About Edit Externally</h2>
+    <p>
+    <div class="sectionbody">
+      <div class="paragraph">
+        <p>Allows opening the currently edited file in an external editor.</p>
+      </div>
+      <div class="paragraph">
+        <p>Its main purpose is to open the currently edited file at the exact same cursor
+        position as in Netbeans to execute some complex editing action that is not
+        easily possible within Netbeans itself.</p>
+      </div>
+      <div class="paragraph">
+        <p>The command to open the file in an external editor must be supplied by the
+        user and allows placeholders to specify the location of the cursor to be
+        able to jump to the same location of the cursor in Netbeans' editor.</p>
+      </div>
+      <div class="paragraph">
+        <p>A fallback command can be specified for opening file for which no editor
+        window is open. This command doesn&#8217;t support all the placeholders, but
+        allows editing a file directly from the Projects nodes.</p>
+      </div>
+      <div class="sect1">
+        <h2 id="_usage">Usage</h2>
+        <div class="sectionbody">
+          <div class="paragraph">
+            <p>This plugin adds an Entry <code>Edit Externally</code> to the following menus:</p>
+          </div>
+          <div class="ulist">
+            <ul>
+              <li>
+                <p>Main Menu <code>Tools</code></p>
+              </li>
+              <li>
+                <p>Context Menu of each editor window</p>
+              </li>
+              <li>
+                <p>Submenu <code>Tools</code> in the context popup menu of each node in the Projects view</p>
+              </li>
+            </ul>
+          </div>
+          <div class="paragraph">
+            <p>Additionally an icon is placed in the <code>File</code> section of the main toolbar
+            and into the editors toolbar:
+            <span class="image"><img src="src/main/resources/de/poiu/nbee/icons/edit-externally32.png" alt="Icon"></span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="sect1">
+      <h2 id="_configuration">Configuration</h2>
+      <div class="sectionbody">
+        <div class="paragraph">
+          <p>The configuration panel can be found at
+          <code>Tools / Options / Miscellaneous / Edit Externally</code>.</p>
+        </div>
+        <div class="paragraph">
+          <p>There are two commands to be configured:</p>
+        </div>
+        <div class="ulist">
+          <ul>
+            <li>
+              <p>Edit externally</p>
+            </li>
+            <li>
+              <p>Open externally</p>
+            </li>
+          </ul>
+        </div>
+        <div class="paragraph">
+          <p>This plugin decides which one to call based on the information it has about
+          the currently selected file. If an open editor for the file is found, the
+          <code>Edit externally</code> action is called as it allows including cursor location
+          information in the command.</p>
+        </div>
+        <div class="paragraph">
+          <p>If no associated editor is found, the <code>Open externally</code> action is called
+          instead.</p>
+        </div>
+        <div class="sect2">
+          <h3 id="_placeholders">Placeholders</h3>
+          <div class="paragraph">
+            <p>The following placeholders can be used for both commands:</p>
+          </div>
+          <div class="hdlist">
+            <table>
+              <tr>
+                <td class="hdlist1">
+                  ${file}
+                </td>
+                <td class="hdlist2">
+                  <p>The absolute path to the file.</p>
+                </td>
+              </tr>
+              <tr>
+                <td class="hdlist1">
+                  ${fileName}
+                </td>
+                <td class="hdlist2">
+                  <p>The file name of the file.</p>
+                </td>
+              </tr>
+              <tr>
+                <td class="hdlist1">
+                  ${fileBasename}
+                </td>
+                <td class="hdlist2">
+                  <p>The file name of the file without extension.</p>
+                </td>
+              </tr>
+              <tr>
+                <td class="hdlist1">
+                  ${fileExt}
+                </td>
+                <td class="hdlist2">
+                  <p>The file extension of the file.</p>
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div class="paragraph">
+            <p>The following placeholders can additionally be used for the <code>Edit
+              externally</code> action:</p>
+          </div>
+          <div class="hdlist">
+            <table>
+              <tr>
+                <td class="hdlist1">
+                  ${line0}
+                </td>
+                <td class="hdlist2">
+                  <p>The line of the cursor location (0-based).</p>
+                </td>
+              </tr>
+              <tr>
+                <td class="hdlist1">
+                  ${line}
+                </td>
+                <td class="hdlist2">
+                  <p>The line of the cursor location (1-based).</p>
+                </td>
+              </tr>
+              <tr>
+                <td class="hdlist1">
+                  ${column0}
+                </td>
+                <td class="hdlist2">
+                  <p>The column of the cursor location (0-based).</p>
+                </td>
+              </tr>
+              <tr>
+                <td class="hdlist1">
+                  ${column}
+                </td>
+                <td class="hdlist2">
+                  <p>The column of the cursor location (1-based).</p>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <div class="sect2">
+          <h3 id="_quoting_and_escaping">Quoting and Escaping</h3>
+          <div class="paragraph">
+            <p>To allow command line arguments with spaces they can be enclosed within
+            single or double quotes. It is also possible to escape a single space or
+            quote character by preceding it with a backslash.</p>
+          </div>
+          <div class="paragraph">
+            <p>Backslashes take precedence over quote. Therefore it is possible to have
+            quotes as part of a quoted string like in this example:</p>
+          </div>
+          <div class="listingblock">
+            <div class="content">
+              <pre>myprogram 'my \'quoted\' string'</pre>
+            </div>
+          </div>
+        </div>
+        <div class="sect2">
+          <h3 id="_examples">Examples</h3>
+          <div class="paragraph">
+            <p>To call <code>vim</code> in an <code>urxvt</code> terminal the following configuration can be
+            used:</p>
+          </div>
+          <div class="dlist">
+            <dl>
+              <dt class="hdlist1">Edit externally</dt>
+              <dd>
+              <p><code>urxvt -e vim ${file} "+call cursor(${line}, ${column})"</code></p>
+              </dd>
+              <dt class="hdlist1">Open externally</dt>
+              <dd>
+              <p><code>urxvt -e vim ${file}</code></p>
+              </dd>
+            </dl>
+          </div>
+        </div>
+        <div class="sect2">
+          <h3 id="_keybindings">Keybindings</h3>
+          <div class="paragraph">
+            <p>This plugin registers an action with the name „Edit Externally“ in
+            Netbeans. It is recommended to provide a custom keybinding for that action
+            for faster access.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="sect1">
+      <h2 id="_known_issues">Known Issues</h2>
+      <div class="sectionbody">
+        <div class="ulist">
+          <ul>
+            <li>
+              <p>Multiple selected files are not supported at the moment.</p>
+              <div class="paragraph">
+                <p>If multiple files are selected in the Node tree, only one of them will get
+                opened in the configured editor.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="sect1">
+      <h2 id="_related_plugins">Related plugins</h2>
+      <div class="sectionbody">
+        <div class="paragraph">
+          <p>This plugin is inspired by the following existing plugins.</p>
+        </div>
+        <div class="dlist">
+          <dl>
+            <dt class="hdlist1">QuickOpener</dt>
+            <dd>
+            <p><a href="http://plugins.netbeans.org/plugin/62668/quickopener" class="bare">http://plugins.netbeans.org/plugin/62668/quickopener</a></p>
+            <div class="paragraph">
+              <p>This plugin shares some of the same ideas and does provides some
+              additional actions. Unfortunately it is quite buggy and not very handy.</p>
+            </div>
+            </dd>
+            <dt class="hdlist1">Use System Desktop</dt>
+            <dd>
+            <p><a href="http://plugins.netbeans.org/plugin/57462/netbeans-use-system-desktop" class="bare">http://plugins.netbeans.org/plugin/57462/netbeans-use-system-desktop</a></p>
+            <div class="paragraph">
+              <p>This plugin provides actions to open the currently selected file via the
+              operating systems default application. It lacks the ability to jump to a
+              specific cursor location, but may be used together with <code>Edit Externally</code>.</p>
+            </div>
+            </dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+    <div class="sect1">
+      <h2 id="_license">License</h2>
+      <div class="sectionbody">
+        <div class="paragraph">
+          <p>This plugins is licensed under the terms of the <a href="https://github.com/hupfdule/nb-edit-externally/blob/master/LICENSE.txt">Apache license
+            2.0</a>.</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+<!--
+  Tip: to create a link which will open in an external web browser, try:
+  <object classid="java:org.netbeans.modules.javahelp.BrowserDisplayer">
+  <param name="content" value="http://www.netbeans.org/">
+  <param name="text" value="<html><u>http://www.netbeans.org/</u></html>">
+  <param name="textFontSize" value="medium">
+  <param name="textColor" value="blue">
+  </object>
+  To create a link to a help set from another module, you need to know the code name base and path, e.g.:
+  <a href="nbdocs://org.netbeans.modules.usersguide/org/netbeans/modules/usersguide/configure/configure_options.html">Using the Options Window</a>
+  (This link will behave sanely if that module is disabled or missing.)
+-->
