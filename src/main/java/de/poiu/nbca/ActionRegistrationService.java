@@ -111,6 +111,7 @@ public class ActionRegistrationService {
     }
 
 
+    // TODO: Move to util class
     protected static String joinPath(final Object[] array) {
       if (array == null) {
         return null;

@@ -5,6 +5,7 @@
  */
 package de.poiu.nbca.config;
 
+import de.poiu.nbca.Cmd;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,13 +18,7 @@ import javax.swing.table.AbstractTableModel;
  */
 public class CustomActionsTableModel extends AbstractTableModel {
 
-  public static class Entry {
-    String title= "";
-    String cmdLine= "";
-  }
-
-
-  private final List<Entry> entries= Collections.synchronizedList(new ArrayList<Entry>());
+  private final List<Cmd> entries= Collections.synchronizedList(new ArrayList<Cmd>());
 
   @Override
   public int getRowCount() {
@@ -39,10 +34,10 @@ public class CustomActionsTableModel extends AbstractTableModel {
 
   @Override
   public String getValueAt(int rowIndex, int columnIndex) {
-    final Entry e= this.entries.get(rowIndex);
+    final Cmd cmd= this.entries.get(rowIndex);
     switch (columnIndex) {
-      case 0: return e.title;
-      case 1: return e.cmdLine;
+      case 0: return cmd.getTitle();
+      case 1: return cmd.getCmdLine();
       default: throw new IllegalArgumentException("Invalid index "+columnIndex+". Highest possible column index is "+(this.getColumnCount() - 1)+".");
     }
   }
@@ -59,14 +54,14 @@ public class CustomActionsTableModel extends AbstractTableModel {
       throw new IllegalArgumentException("Invalid value: "+aValue);
     }
 
-    final Entry e= this.entries.get(rowIndex);
+    final Cmd cmd= this.entries.get(rowIndex);
     switch (columnIndex) {
       case 0:
-        e.title= newValue;
+        cmd.setTitle(newValue);
         fireTableCellUpdated(rowIndex, columnIndex);
         break;
       case 1:
-        e.cmdLine= newValue;
+        cmd.setCmdLine(newValue);
         fireTableCellUpdated(rowIndex, columnIndex);
         break;
       default:
@@ -97,14 +92,14 @@ public class CustomActionsTableModel extends AbstractTableModel {
   }
 
 
-  public void add(final Entry e) {
-    this.entries.add(e);
+  public void add(final Cmd cmd) {
+    this.entries.add(cmd);
     fireTableRowsInserted(this.entries.size() -1, this.entries.size() -1);
   }
 
 
   public void addRow() {
-    this.entries.add(new Entry());
+    this.entries.add(new Cmd());
     fireTableRowsInserted(this.entries.size() -1, this.entries.size() -1);
   }
 
@@ -116,9 +111,9 @@ public class CustomActionsTableModel extends AbstractTableModel {
 
 
   public boolean isRowEmpty(final int row) {
-    final Entry e= this.entries.get(row);
-    return e.title.trim().isEmpty()
-      && e.cmdLine.trim().isEmpty();
+    final Cmd e= this.entries.get(row);
+    return e.getTitle().trim().isEmpty()
+      && e.getCmdLine().trim().isEmpty();
   }
 
 
@@ -126,5 +121,10 @@ public class CustomActionsTableModel extends AbstractTableModel {
     final int size= this.entries.size();
     this.entries.clear();
     fireTableRowsDeleted(0, Math.max(0, size-1));
+  }
+
+
+  public List<Cmd> getAllEntries() {
+    return new ArrayList<Cmd>(this.entries);
   }
 }

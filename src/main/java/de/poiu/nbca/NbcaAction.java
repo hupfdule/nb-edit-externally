@@ -7,6 +7,7 @@ package de.poiu.nbca;
 
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
+import javax.swing.event.SwingPropertyChangeSupport;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 
@@ -17,37 +18,35 @@ import org.openide.NotifyDescriptor;
  */
 public class NbcaAction extends AbstractAction {
 
-  private final String title;
-  private final String cmdLine;
+  private final Cmd cmd;
 
 
-  public NbcaAction(String title, String cmdLine) {
-    this.title = title;
-    this.cmdLine = cmdLine;
+  public NbcaAction(final Cmd cmd) {
+    this.cmd= cmd;
   }
 
 
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    new Executor().execute(cmdLine);
+    final NotifyDescriptor nd = new NotifyDescriptor.Confirmation(cmd, NotifyDescriptor.INFORMATION_MESSAGE);
+    DialogDisplayer.getDefault().notify(nd);
+
+    new Executor().execute(cmd);
+  }
+
+
+  public Cmd getCmd() {
+    return cmd;
   }
 
 
   @Override
   public String toString() {
-    return "NbcaAction{" + "title=" + title + ", cmdLine=" + cmdLine + '}';
+    return "NbcaAction{" + "cmd=" + cmd + '}';
   }
 
 
-  public String getTitle() {
-    return title;
-  }
-
-
-  public String getCmdLine() {
-    return cmdLine;
-  }
 
 
 

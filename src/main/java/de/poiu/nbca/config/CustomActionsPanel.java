@@ -6,8 +6,8 @@
 package de.poiu.nbca.config;
 
 import de.poiu.nbca.ActionRegistrationService;
+import de.poiu.nbca.Cmd;
 import de.poiu.nbca.NbcaAction;
-import de.poiu.nbca.config.CustomActionsTableModel.Entry;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
@@ -19,6 +19,7 @@ import javax.swing.event.TableModelListener;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.Exceptions;
+import org.openide.util.Lookup;
 import org.openide.util.NbPreferences;
 
 
@@ -153,13 +154,15 @@ final class CustomActionsPanel extends javax.swing.JPanel {
       // someTextField.setText(SomeSystemOption.getDefault().getSomeStringProperty());
       this.tableModel.clear();
 
-      final List<Action> actions= new ActionRegistrationService().findActions("Tools");
+      final ActionRegistrationService ars= Lookup.getDefault().lookup(ActionRegistrationService.class);
+      final List<Action> actions= ars.findActions("Tools");
       for (final Action action : actions) {
-        final NbcaAction nbcaAction= (NbcaAction) action;
-        final Entry entry= new Entry();
-        entry.title= nbcaAction.getTitle();
-        entry.cmdLine= nbcaAction.getCmdLine();
-        this.tableModel.add(entry);
+        if (action instanceof NbcaAction) {
+          final NbcaAction nbcaAction= (NbcaAction) action;
+          this.tableModel.add(nbcaAction.getCmd());
+        } else {
+          LOGGER.log(Level.WARNING, "Stored Action {0} is not an NbcaAction.", action);
+        }
       }
 //      for (final String prefKey : NbPreferences.forModule(CustomActionsPanel.class).keys()) {
 //        if (prefKey.startsWith(PREFS_PREFIX)) {
@@ -186,31 +189,51 @@ final class CustomActionsPanel extends javax.swing.JPanel {
     // or:
     // SomeSystemOption.getDefault().setSomeStringProperty(someTextField.getText());
 
-    // TODO: Cleanup actions
-    try {
-      for (final String prefKey : NbPreferences.forModule(CustomActionsPanel.class).keys()) {
-        if (prefKey.startsWith(PREFS_PREFIX)) {
-          NbPreferences.forModule(CustomActionsPanel.class).remove(prefKey);
-        }
-      }
-    } catch (BackingStoreException ex) {
-      Exceptions.printStackTrace(ex);
-    }
+//    // TODO: Cleanup actions
+//    try {
+//      for (final String prefKey : NbPreferences.forModule(CustomActionsPanel.class).keys()) {
+//        if (prefKey.startsWith(PREFS_PREFIX)) {
+//          NbPreferences.forModule(CustomActionsPanel.class).remove(prefKey);
+//        }
+//      }
+//    } catch (BackingStoreException ex) {
+//      Exceptions.printStackTrace(ex);
+//    }
 
-    for (int row=0; row < this.tableModel.getRowCount(); row++) {
-      final String title= this.tableModel.getValueAt(row, 0).trim();
-      final String cmdLine= this.tableModel.getValueAt(row, 1).trim();
+    final List<Cmd> allEntries= this.tableModel.getAllEntries();
 
-      if (!title.isEmpty() && !cmdLine.isEmpty()) {
-        NbPreferences.forModule(CustomActionsPanel.class).put(PREFS_PREFIX + title, cmdLine);
+    final ActionRegistrationService ars= Lookup.getDefault().lookup(ActionRegistrationService.class);
+
+    // store the new actions
+    for (final Cmd cmd : allEntries) {
+      if (!cmd.isEmpty()) {
+        NbPreferences.forModule(CustomActionsPanel.class).put(PREFS_PREFIX + cmd.getTitle(), cmd.getCmdLine());
 
         try {
-          final NbcaAction action= new NbcaAction(title, cmdLine);
-          new ActionRegistrationService().registerAction(title, "Tools", null, null, action);
+          final NbcaAction action= new NbcaAction(cmd);
+          LOGGER.log(Level.INFO, "Registering (or updating) action for Cmd {0}", action.getCmd());
+          ars.registerAction(cmd.getTitle(), "Tools", "CA-E", "Menu/Tools/Custom Actions", action);
         } catch (IOException ex) {
           Exceptions.printStackTrace(ex);
         }
       }
+    }
+
+    // delete obsolete actions
+    try {
+      final List<Action> allActions= ars.findActions("Tools");
+      for (final Action action : allActions) {
+        if (action instanceof NbcaAction) {
+          final NbcaAction nbcaAction= (NbcaAction) action;
+          if (!allEntries.contains(nbcaAction.getCmd())) {
+            LOGGER.log(Level.INFO, "Deleting obsolete action for Cmd {0}", nbcaAction.getCmd());
+          }
+        } else {
+          LOGGER.log(Level.WARNING, "Cowardly refusing to delete unknown action {0}", action);
+        }
+      }
+    } catch (IOException ex) {
+      Exceptions.printStackTrace(ex);
     }
   }
 

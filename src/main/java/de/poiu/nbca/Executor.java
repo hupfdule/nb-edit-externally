@@ -12,6 +12,8 @@ import java.util.logging.Logger;
 import javax.swing.JEditorPane;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.StyledDocument;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.awt.StatusDisplayer;
 import org.openide.cookies.EditorCookie;
 import org.openide.filesystems.FileObject;
@@ -43,8 +45,12 @@ public class Executor {
   //       - Execute command for currently edited file
   //       - Execute and replace selection
   //       - Execute command for selected node (file or folder)
-  public void execute(final String cmdStringTemplate) {
+  public void execute(final Cmd cmd) {
     final DataObject dataObject= TopComponent.getRegistry().getActivated().getLookup().lookup(DataObject.class);
+
+    String msg1 = "There is something you should know... "+getFileObjectFrom(dataObject)+" "+getCurrentEditor()+" "+(getCurrentEditor() instanceof StyledDocument);
+    NotifyDescriptor nd = new NotifyDescriptor.Message(msg1, NotifyDescriptor.INFORMATION_MESSAGE);
+    DialogDisplayer.getDefault().notify(nd);
 
     final FileObject file = getFileObjectFrom(dataObject);
     if (file == null) {
@@ -58,8 +64,8 @@ public class Executor {
       return;
     }
 
-    if (!(editor instanceof StyledDocument)) {
-      LOGGER.log(Level.INFO, "Ignoring execution request, since current editor doesn't contain a StyledDocument, but instead a {0}", editor.getClass());
+    if (!(editor.getDocument() instanceof StyledDocument)) {
+      LOGGER.log(Level.INFO, "Ignoring execution request, since current editors document doesn't contain a StyledDocument, but instead a {0}", editor.getDocument().getClass());
       return;
     }
 
@@ -71,7 +77,7 @@ public class Executor {
 
     final File actualFile= FileUtil.toFile(file);
 
-    final String cmdString= cmdStringTemplate
+    final String cmdString= cmd.getCmdLine()
       .replace("${file}", actualFile.getAbsolutePath())
       .replace("${fileName}", file.getNameExt())
       .replace("${fileBasename}", file.getName())
@@ -85,6 +91,10 @@ public class Executor {
       .replace("${selectionEnd}", String.valueOf(editor.getSelectionEnd()))
       ;
     final String[] command= CmdlineParser.parse(cmdString);
+
+    String msg2 = cmdString;
+    NotifyDescriptor nd2 = new NotifyDescriptor.Message(msg2, NotifyDescriptor.INFORMATION_MESSAGE);
+    DialogDisplayer.getDefault().notify(nd2);
 
     try {
       final String msg= Bundle.CTL_Editing_Status(file.getPath());
