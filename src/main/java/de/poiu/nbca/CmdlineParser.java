@@ -87,14 +87,4 @@ public class CmdlineParser {
 
     return parsedCmdLine.toArray(new String[parsedCmdLine.size()]);
   }
-
-  public static void main(String[] args) {
-    System.out.println(' '-1+1);
-    System.out.println('\t'-1+1);
-    System.out.println('\n'-1+1);
-    System.out.println('\r'-1+1);
-    System.out.println('"'-1+1);
-    System.out.println('\''-1+1);
-  }
-
 }

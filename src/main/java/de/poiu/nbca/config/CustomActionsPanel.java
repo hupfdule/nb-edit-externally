@@ -5,10 +5,15 @@
  */
 package de.poiu.nbca.config;
 
+import de.poiu.nbca.ActionRegistrationService;
+import de.poiu.nbca.NbcaAction;
 import de.poiu.nbca.config.CustomActionsTableModel.Entry;
+import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
+import javax.swing.Action;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import org.openide.DialogDisplayer;
@@ -160,6 +165,14 @@ final class CustomActionsPanel extends javax.swing.JPanel {
     } catch (BackingStoreException ex) {
       Exceptions.printStackTrace(ex);
     }
+
+    try {
+      final List<Action> actions= new ActionRegistrationService().findActions("Tools");
+      final NotifyDescriptor nd= new NotifyDescriptor.Message("Actions: "+actions, NotifyDescriptor.INFORMATION_MESSAGE);
+      DialogDisplayer.getDefault().notify(nd);
+    } catch (IOException ex) {
+      Exceptions.printStackTrace(ex);
+    }
   }
 
 
@@ -187,6 +200,13 @@ final class CustomActionsPanel extends javax.swing.JPanel {
 
       if (!title.isEmpty() && !cmdLine.isEmpty()) {
         NbPreferences.forModule(CustomActionsPanel.class).put(PREFS_PREFIX + title, cmdLine);
+
+        try {
+          final NbcaAction action= new NbcaAction(title, cmdLine);
+          new ActionRegistrationService().registerAction(title, "Tools", null, null, action);
+        } catch (IOException ex) {
+          Exceptions.printStackTrace(ex);
+        }
       }
     }
   }

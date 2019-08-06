@@ -6,7 +6,9 @@
 package de.poiu.nbca;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import javax.swing.Action;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
@@ -19,6 +21,23 @@ import org.openide.util.lookup.ServiceProvider;
  */
 @ServiceProvider(service=ActionRegistrationService.class)
 public class ActionRegistrationService {
+
+    public List<Action> findActions(final String category) throws IOException {
+      final List<Action> actions= new ArrayList<Action>();
+
+      final FileObject in = getFolderAt("Actions/" + category + "/Nbca");
+      final FileObject[] instanceFiles = in.getChildren();
+      for (final FileObject obj : instanceFiles) {
+        // FIXME: check type
+        System.out.println("instanceClass: "+obj.getAttribute("instanceClass"));
+        System.out.println("instanceCreate: "+obj.getAttribute("instanceCreate"));
+        actions.add((Action) obj.getAttribute("instanceCreate"));
+      }
+
+      return actions;
+    }
+
+
     /**
      * Registers an action with the platform along with optional shortcuts and
      * menu items.
@@ -46,28 +65,33 @@ public class ActionRegistrationService {
         /////////////////////
         // Add/Update Menu //
         /////////////////////
-        in = getFolderAt(menuPath);
-        obj = in.getFileObject(name, "shadow");
-        // Create if missing.
-        if (obj == null) {
+        if (menuPath != null) {
+          in = getFolderAt(menuPath);
+          obj = in.getFileObject(name, "shadow");
+          // Create if missing.
+          if (obj == null) {
             obj = in.createData(name, "shadow");
             obj.setAttribute("originalFile", originalFile);
+          }
         }
 
         /////////////////////////
         // Add/Update Shortcut //
         /////////////////////////
-        in = getFolderAt("Shortcuts");
-        obj = in.getFileObject(shortcut, "shadow");
-        if (obj == null) {
+        if (shortcut != null) {
+          in = getFolderAt("Shortcuts");
+          obj = in.getFileObject(shortcut, "shadow");
+          if (obj == null) {
             obj = in.createData(shortcut, "shadow");
             obj.setAttribute("originalFile", originalFile);
+          }
         }
     }
 
+
     private FileObject getFolderAt(String inputPath) throws IOException {
-        String parts[] = inputPath.split("/");
-        FileObject existing = FileUtil.getConfigFile(inputPath);
+        final String parts[] = inputPath.split("/");
+        final FileObject existing = FileUtil.getConfigFile(inputPath);
         if (existing != null)
             return existing;
 
@@ -75,7 +99,7 @@ public class ActionRegistrationService {
         if (base == null) return null;
 
         for (int i = 1; i < parts.length; i++) {
-            String path = joinPath(Arrays.copyOfRange(parts,0,i+1));
+            final String path = joinPath(Arrays.copyOfRange(parts,0,i+1));
             FileObject next = FileUtil.getConfigFile(path);
             if (next == null) {
                 next = base.createFolder(parts[i]);
@@ -87,7 +111,7 @@ public class ActionRegistrationService {
     }
 
 
-    static String joinPath(final Object[] array) {
+    protected static String joinPath(final Object[] array) {
       if (array == null) {
         return null;
       }
