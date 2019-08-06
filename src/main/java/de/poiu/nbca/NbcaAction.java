@@ -30,15 +30,23 @@ public class NbcaAction extends AbstractAction {
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    // FIXME: Replace with real code
-    final NotifyDescriptor nd= new NotifyDescriptor.Message(title+" -> "+cmdLine, NotifyDescriptor.INFORMATION_MESSAGE);
-    DialogDisplayer.getDefault().notify(nd);
+    new Executor().execute(cmdLine);
   }
 
 
   @Override
   public String toString() {
     return "NbcaAction{" + "title=" + title + ", cmdLine=" + cmdLine + '}';
+  }
+
+
+  public String getTitle() {
+    return title;
+  }
+
+
+  public String getCmdLine() {
+    return cmdLine;
   }
 
 

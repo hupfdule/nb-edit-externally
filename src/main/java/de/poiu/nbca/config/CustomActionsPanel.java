@@ -152,24 +152,25 @@ final class CustomActionsPanel extends javax.swing.JPanel {
       // or:
       // someTextField.setText(SomeSystemOption.getDefault().getSomeStringProperty());
       this.tableModel.clear();
-      for (final String prefKey : NbPreferences.forModule(CustomActionsPanel.class).keys()) {
-        if (prefKey.startsWith(PREFS_PREFIX)) {
-          final String title= prefKey.substring(PREFS_PREFIX.length());
-          final String cmdLine= NbPreferences.forModule(CustomActionsPanel.class).get(prefKey, "");
-          final Entry entry= new Entry();
-          entry.title= title;
-          entry.cmdLine= cmdLine;
-          this.tableModel.add(entry);
-        }
-      }
-    } catch (BackingStoreException ex) {
-      Exceptions.printStackTrace(ex);
-    }
 
-    try {
       final List<Action> actions= new ActionRegistrationService().findActions("Tools");
-      final NotifyDescriptor nd= new NotifyDescriptor.Message("Actions: "+actions, NotifyDescriptor.INFORMATION_MESSAGE);
-      DialogDisplayer.getDefault().notify(nd);
+      for (final Action action : actions) {
+        final NbcaAction nbcaAction= (NbcaAction) action;
+        final Entry entry= new Entry();
+        entry.title= nbcaAction.getTitle();
+        entry.cmdLine= nbcaAction.getCmdLine();
+        this.tableModel.add(entry);
+      }
+//      for (final String prefKey : NbPreferences.forModule(CustomActionsPanel.class).keys()) {
+//        if (prefKey.startsWith(PREFS_PREFIX)) {
+//          final String title= prefKey.substring(PREFS_PREFIX.length());
+//          final String cmdLine= NbPreferences.forModule(CustomActionsPanel.class).get(prefKey, "");
+//          final Entry entry= new Entry();
+//          entry.title= title;
+//          entry.cmdLine= cmdLine;
+//          this.tableModel.add(entry);
+//        }
+//      }
     } catch (IOException ex) {
       Exceptions.printStackTrace(ex);
     }
@@ -184,6 +185,8 @@ final class CustomActionsPanel extends javax.swing.JPanel {
     // NbPreferences.forModule(CustomActionsPanel.class).putBoolean("someFlag", someCheckBox.isSelected());
     // or:
     // SomeSystemOption.getDefault().setSomeStringProperty(someTextField.getText());
+
+    // TODO: Cleanup actions
     try {
       for (final String prefKey : NbPreferences.forModule(CustomActionsPanel.class).keys()) {
         if (prefKey.startsWith(PREFS_PREFIX)) {
