@@ -7,14 +7,18 @@ package de.poiu.nbca;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import org.netbeans.api.options.OptionsDisplayer;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
-import org.openide.cookies.EditorCookie;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
+import org.openide.util.NbPreferences;
+
+import static de.poiu.nbca.Prefs.OPTION_EDIT_EXTERNALLY_CMD;
+import static de.poiu.nbca.Prefs.PREFS_PREFIX;
 
 
 @ActionID(
@@ -39,11 +43,20 @@ public final class EditExternally implements ActionListener {
 
   @Override
   public void actionPerformed(ActionEvent ev) {
-    final Cmd cmd= new Cmd("Edit in Vim", "urxvt -e nvim ${file} \"+call cursor(${line}, ${column})\"");
+//    final Cmd cmd= new Cmd("Edit in Vim", "urxvt -e nvim ${file} \"+call cursor(${line}, ${column})\"");
 
-    final NotifyDescriptor nd = new NotifyDescriptor.Confirmation(cmd, NotifyDescriptor.INFORMATION_MESSAGE);
-    DialogDisplayer.getDefault().notify(nd);
+    final String cmdLine= NbPreferences.forModule(Prefs.class).get(PREFS_PREFIX + OPTION_EDIT_EXTERNALLY_CMD, "");
 
-    new Executor().execute(cmd);
+    if (cmdLine == null || cmdLine.trim().isEmpty()) {
+      final String msg= "<html>No command to open file externally is defined yet.<br/>Open configuration panel now?</html>";
+      final NotifyDescriptor nd = new NotifyDescriptor.Confirmation(msg, NotifyDescriptor.YES_NO_OPTION);
+      final Object result = DialogDisplayer.getDefault().notify(nd);
+      if (NotifyDescriptor.YES_OPTION == result) {
+        OptionsDisplayer.getDefault().open("Advanced"+ "/de.poiu.nbca.CustomActionsOptions");
+      }
+    } else {
+      final Cmd cmd= new Cmd("Edit externally", cmdLine);
+      new Executor().execute(cmd);
+    }
   }
 }

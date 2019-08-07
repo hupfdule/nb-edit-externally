@@ -6,15 +6,15 @@
 package de.poiu.nbca.config;
 
 import de.poiu.nbca.CmdlineParser;
-import de.poiu.nbca.Consts;
+import de.poiu.nbca.Prefs;
 import de.poiu.nbca.ParseException;
 import java.util.logging.Logger;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.openide.util.NbPreferences;
 
-import static de.poiu.nbca.Consts.OPTION_EDIT_EXTERNALLY_CMD;
-import static de.poiu.nbca.Consts.PREFS_PREFIX;
+import static de.poiu.nbca.Prefs.OPTION_EDIT_EXTERNALLY_CMD;
+import static de.poiu.nbca.Prefs.PREFS_PREFIX;
 
 
 final class CustomActions2Panel extends javax.swing.JPanel {
@@ -36,20 +36,33 @@ final class CustomActions2Panel extends javax.swing.JPanel {
       @Override
       public void insertUpdate(DocumentEvent e) {
         controller.changed();
+        updateErrorMessages();
       }
 
 
       @Override
       public void removeUpdate(DocumentEvent e) {
         controller.changed();
+        updateErrorMessages();
       }
 
 
       @Override
       public void changedUpdate(DocumentEvent e) {
         controller.changed();
+        updateErrorMessages();
       }
     });
+  }
+
+
+  private void updateErrorMessages() {
+    try {
+      CmdlineParser.parse(this.tfEditExternallyCmd.getText().trim());
+      this.lblErrorMessages.setText("");
+    } catch (Exception ex) {
+      this.lblErrorMessages.setText(ex.getMessage());
+    }
   }
 
 
@@ -64,10 +77,14 @@ final class CustomActions2Panel extends javax.swing.JPanel {
 
     lblEditExternallyCmd = new javax.swing.JLabel();
     tfEditExternallyCmd = new javax.swing.JTextField();
+    lblErrorMessages = new javax.swing.JLabel();
 
     org.openide.awt.Mnemonics.setLocalizedText(lblEditExternallyCmd, org.openide.util.NbBundle.getMessage(CustomActions2Panel.class, "CustomActions2Panel.lblEditExternallyCmd.text")); // NOI18N
 
     tfEditExternallyCmd.setText(org.openide.util.NbBundle.getMessage(CustomActions2Panel.class, "CustomActions2Panel.tfEditExternallyCmd.text")); // NOI18N
+
+    lblErrorMessages.setForeground(new java.awt.Color(255, 0, 0));
+    org.openide.awt.Mnemonics.setLocalizedText(lblErrorMessages, org.openide.util.NbBundle.getMessage(CustomActions2Panel.class, "CustomActions2Panel.lblErrorMessages.text")); // NOI18N
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
@@ -75,9 +92,12 @@ final class CustomActions2Panel extends javax.swing.JPanel {
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(lblEditExternallyCmd)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(tfEditExternallyCmd, javax.swing.GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(lblErrorMessages, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(lblEditExternallyCmd)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(tfEditExternallyCmd, javax.swing.GroupLayout.DEFAULT_SIZE, 321, Short.MAX_VALUE)))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -87,7 +107,9 @@ final class CustomActions2Panel extends javax.swing.JPanel {
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(lblEditExternallyCmd)
           .addComponent(tfEditExternallyCmd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(129, Short.MAX_VALUE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 123, Short.MAX_VALUE)
+        .addComponent(lblErrorMessages)
+        .addContainerGap())
     );
   }// </editor-fold>//GEN-END:initComponents
 
@@ -101,7 +123,7 @@ final class CustomActions2Panel extends javax.swing.JPanel {
     // or:
     // someTextField.setText(SomeSystemOption.getDefault().getSomeStringProperty());
 
-    this.tfEditExternallyCmd.setText(NbPreferences.forModule(CustomActions2Panel.class)
+    this.tfEditExternallyCmd.setText(NbPreferences.forModule(Prefs.class)
       .get(PREFS_PREFIX + OPTION_EDIT_EXTERNALLY_CMD, ""));
   }
 
@@ -114,7 +136,7 @@ final class CustomActions2Panel extends javax.swing.JPanel {
     // NbPreferences.forModule(CustomActions2Panel.class).putBoolean("someFlag", someCheckBox.isSelected());
     // or:
     // SomeSystemOption.getDefault().setSomeStringProperty(someTextField.getText());
-    NbPreferences.forModule(CustomActions2Panel.class)
+    NbPreferences.forModule(Prefs.class)
       .put(PREFS_PREFIX + OPTION_EDIT_EXTERNALLY_CMD, this.tfEditExternallyCmd.getText());
   }
 
@@ -130,6 +152,7 @@ final class CustomActions2Panel extends javax.swing.JPanel {
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JLabel lblEditExternallyCmd;
+  private javax.swing.JLabel lblErrorMessages;
   private javax.swing.JTextField tfEditExternallyCmd;
   // End of variables declaration//GEN-END:variables
 

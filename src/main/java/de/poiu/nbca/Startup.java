@@ -5,6 +5,7 @@
  */
 package de.poiu.nbca;
 
+import de.poiu.nbca.config.CustomActions2OptionsPanelController;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,9 +31,9 @@ public class Startup implements Runnable {
   @Override
   public void run() {
     //TODO: Register actions in IDE
-//    String msg = "Mir Startet...";
-//    NotifyDescriptor nd = new NotifyDescriptor.Message(msg, NotifyDescriptor.INFORMATION_MESSAGE);
-//    DialogDisplayer.getDefault().notify(nd);
+    String msg = "Mir Startet... ";//+CustomActions2OptionsPanelController.SubRegistration.id();
+    NotifyDescriptor nd = new NotifyDescriptor.Message(msg, NotifyDescriptor.INFORMATION_MESSAGE);
+    DialogDisplayer.getDefault().notify(nd);
 //
 //    final ActionRegistrationService ars= Lookup.getDefault().lookup(ActionRegistrationService.class);
 //

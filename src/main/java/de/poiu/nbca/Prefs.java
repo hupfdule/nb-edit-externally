@@ -10,7 +10,7 @@ package de.poiu.nbca;
  *
  * @author mherrn
  */
-public class Consts {
+public class Prefs {
 
   public static final String PREFS_PREFIX= "CustomAction-";
   public static final String OPTION_EDIT_EXTERNALLY_CMD = "EditExternallyCmd";

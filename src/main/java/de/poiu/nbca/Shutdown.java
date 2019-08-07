@@ -20,9 +20,9 @@ public class Shutdown implements Runnable {
   @Override
   public void run() {
     //TODO: Deregister actions in IDE
-//    String msg = "Mir Stoppet...";
-//    NotifyDescriptor nd = new NotifyDescriptor.Message(msg, NotifyDescriptor.INFORMATION_MESSAGE);
-//    DialogDisplayer.getDefault().notify(nd);
+    String msg = "Mir Stoppet...";
+    NotifyDescriptor nd = new NotifyDescriptor.Message(msg, NotifyDescriptor.INFORMATION_MESSAGE);
+    DialogDisplayer.getDefault().notify(nd);
   }
 
 }

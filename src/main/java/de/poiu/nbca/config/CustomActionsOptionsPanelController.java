@@ -65,6 +65,9 @@ public final class CustomActionsOptionsPanelController extends OptionsPanelContr
 
 
   public JComponent getComponent(Lookup masterLookup) {
+//    String msg = "Mir Startet... "+this.SubRegistration.id();
+//    NotifyDescriptor nd = new NotifyDescriptor.Message(msg, NotifyDescriptor.INFORMATION_MESSAGE);
+//    DialogDisplayer.getDefault().notify(nd);
     return getPanel();
   }
 

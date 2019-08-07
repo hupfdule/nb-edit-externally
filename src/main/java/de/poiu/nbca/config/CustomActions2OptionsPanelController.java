@@ -15,6 +15,7 @@ import org.openide.util.Lookup;
 
 
 @OptionsPanelController.SubRegistration(
+  id = "de.poiu.nbca.CustomActionsOptions",
   displayName = "#AdvancedOption_DisplayName_CustomActions2",
   keywords = "#AdvancedOption_Keywords_CustomActions2",
   keywordsCategory = "Advanced/CustomActions2"
