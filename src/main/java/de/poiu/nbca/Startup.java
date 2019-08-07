@@ -8,7 +8,6 @@ package de.poiu.nbca;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.netbeans.core.options.keymap.api.ShortcutsFinder;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.modules.OnStart;
@@ -31,29 +30,24 @@ public class Startup implements Runnable {
   @Override
   public void run() {
     //TODO: Register actions in IDE
-    String msg = "Mir Startet...";
-    NotifyDescriptor nd = new NotifyDescriptor.Message(msg, NotifyDescriptor.INFORMATION_MESSAGE);
-    DialogDisplayer.getDefault().notify(nd);
-
-    final ShortcutsFinder shortcutsFinder= Lookup.getDefault().lookup(ShortcutsFinder.class);
-    final String result = shortcutsFinder.showShortcutsDialog();
-    NotifyDescriptor nd2 = new NotifyDescriptor.Message(result, NotifyDescriptor.INFORMATION_MESSAGE);
-    DialogDisplayer.getDefault().notify(nd2);
-
-    final ActionRegistrationService ars= Lookup.getDefault().lookup(ActionRegistrationService.class);
-
-    final Cmd cmd= new Cmd("Die Edith", "urxvt -e nvim ${file} \"+call cursor(${line}, ${colunn})\"");
-    if (!cmd.isEmpty()) {
-      NbPreferences.forModule(Startup.class).put(PREFS_PREFIX + cmd.getTitle(), cmd.getCmdLine());
-
-      try {
-        final NbcaAction action= new NbcaAction(cmd);
-        LOGGER.log(Level.INFO, "Registering (or updating) action for Cmd {0}", action.getCmd());
-        ars.registerAction(cmd.getTitle(), "Tools", "CA-E", "Menu/Tools/Custom Actions", action);
-      } catch (IOException ex) {
-        Exceptions.printStackTrace(ex);
-      }
-    }
+//    String msg = "Mir Startet...";
+//    NotifyDescriptor nd = new NotifyDescriptor.Message(msg, NotifyDescriptor.INFORMATION_MESSAGE);
+//    DialogDisplayer.getDefault().notify(nd);
+//
+//    final ActionRegistrationService ars= Lookup.getDefault().lookup(ActionRegistrationService.class);
+//
+//    final Cmd cmd= new Cmd("Die Edith", "urxvt -e nvim ${file} \"+call cursor(${line}, ${colunn})\"");
+//    if (!cmd.isEmpty()) {
+//      NbPreferences.forModule(Startup.class).put(PREFS_PREFIX + cmd.getTitle(), cmd.getCmdLine());
+//
+//      try {
+//        final NbcaAction action= new NbcaAction(cmd);
+//        LOGGER.log(Level.INFO, "Registering (or updating) action for Cmd {0}", action.getCmd());
+//        ars.registerAction(cmd.getTitle(), "Tools", "CA-E", "Menu/Tools/Custom Actions", action);
+//      } catch (IOException ex) {
+//        Exceptions.printStackTrace(ex);
+//      }
+//    }
 
   }
 

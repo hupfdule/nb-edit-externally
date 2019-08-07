@@ -78,7 +78,11 @@ public class CmdlineParser {
         default:
           sb.append(c);
       }
+    }
 
+    // an unclosed quote means we could not parse the commandline correctly
+    if (quoteChar != null) {
+      throw new ParseException("Unclosed quote: "+quoteChar.charValue(), cmdLine);
     }
 
     if (sb.length() > 0) {

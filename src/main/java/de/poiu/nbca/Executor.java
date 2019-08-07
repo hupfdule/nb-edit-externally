@@ -48,9 +48,9 @@ public class Executor {
   public void execute(final Cmd cmd) {
     final DataObject dataObject= TopComponent.getRegistry().getActivated().getLookup().lookup(DataObject.class);
 
-    String msg1 = "There is something you should know... "+getFileObjectFrom(dataObject)+" "+getCurrentEditor()+" "+(getCurrentEditor() instanceof StyledDocument);
-    NotifyDescriptor nd = new NotifyDescriptor.Message(msg1, NotifyDescriptor.INFORMATION_MESSAGE);
-    DialogDisplayer.getDefault().notify(nd);
+//    String msg1 = "There is something you should know... "+getFileObjectFrom(dataObject)+" "+getCurrentEditor()+" "+(getCurrentEditor() instanceof StyledDocument);
+//    NotifyDescriptor nd = new NotifyDescriptor.Message(msg1, NotifyDescriptor.INFORMATION_MESSAGE);
+//    DialogDisplayer.getDefault().notify(nd);
 
     final FileObject file = getFileObjectFrom(dataObject);
     if (file == null) {
@@ -92,9 +92,9 @@ public class Executor {
       ;
     final String[] command= CmdlineParser.parse(cmdString);
 
-    String msg2 = cmdString;
-    NotifyDescriptor nd2 = new NotifyDescriptor.Message(msg2, NotifyDescriptor.INFORMATION_MESSAGE);
-    DialogDisplayer.getDefault().notify(nd2);
+//    String msg2 = cmdString;
+//    NotifyDescriptor nd2 = new NotifyDescriptor.Message(msg2, NotifyDescriptor.INFORMATION_MESSAGE);
+//    DialogDisplayer.getDefault().notify(nd2);
 
     try {
       final String msg= Bundle.CTL_Editing_Status(file.getPath());
