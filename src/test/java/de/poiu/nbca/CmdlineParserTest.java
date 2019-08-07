@@ -40,6 +40,7 @@ public class CmdlineParserTest {
       {"vim someFile.txt \"+normal '\\\\'\""        , new String[]{"vim" , "someFile.txt" , "+normal '\\'"}        , null                , null} ,
       {"vim   someFile.txt    \"+normal     GW\""   , new String[]{"vim" , "someFile.txt" , "+normal     GW"}      , null                , null} ,
       {"vim   someFile.txt    \"+normal     GW"     , null                                                         , ParseException.class, "Unclosed quote: \""} ,
+      {"vim   someFile.txt    +normal\\ GW\\"       , null                                                         , ParseException.class, "Escape char at end of string"} ,
     });
   }
 
@@ -52,6 +53,7 @@ public class CmdlineParserTest {
   @Rule
   public ExpectedException thrown = ExpectedException.none();
 
+
   public CmdlineParserTest(final String cmdLine,
                            final String[] expectedOutcome,
                            final Class<? extends Exception> expectedException,
@@ -62,12 +64,13 @@ public class CmdlineParserTest {
     this.expectedExceptionMsg= expectedExceptionMsg;
   }
 
+
   @org.junit.Test
   public void testParseCmdline() {
     //setup expected exception
     if (this.expectedException != null) {
       thrown.expect(this.expectedException);
-      thrown.expectMessage("Unclosed quote: \"");
+      thrown.expectMessage(this.expectedExceptionMsg);
     }
 
     assertArrayEquals(this.expectedOutcome, CmdlineParser.parse(this.cmdLine));

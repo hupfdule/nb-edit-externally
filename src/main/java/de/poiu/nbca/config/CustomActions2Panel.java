@@ -5,7 +5,9 @@
  */
 package de.poiu.nbca.config;
 
+import de.poiu.nbca.CmdlineParser;
 import de.poiu.nbca.Consts;
+import de.poiu.nbca.ParseException;
 import java.util.logging.Logger;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -118,8 +120,12 @@ final class CustomActions2Panel extends javax.swing.JPanel {
 
 
   boolean valid() {
-    // TODO check whether form is consistent and complete
-    return true;
+    try {
+      CmdlineParser.parse(this.tfEditExternallyCmd.getText());
+      return true;
+    } catch (ParseException ex) {
+      return false;
+    }
   }
 
   // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -7,6 +7,7 @@ package de.poiu.nbca;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 /**
@@ -46,6 +47,9 @@ public class CmdlineParser {
 
       switch (c) {
         case '\\':
+          if (cmdLine.length() < i + 2) {
+            throw new ParseException("Escape char at end of string", cmdLine);
+          }
           sb.append(cmdLine.charAt(++i));
           break;
         case '"':
@@ -90,5 +94,10 @@ public class CmdlineParser {
     }
 
     return parsedCmdLine.toArray(new String[parsedCmdLine.size()]);
+  }
+
+
+  public static void main(String[] args) {
+    System.out.println(Arrays.toString(parse("vim aua.txt \\\\Nudel\\")));
   }
 }
