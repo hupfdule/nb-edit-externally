@@ -6,6 +6,8 @@
 package de.poiu.nbca;
 
 import java.util.Arrays;
+import org.junit.Rule;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -23,34 +25,51 @@ public class CmdlineParserTest {
   @Parameters(name = "{index}: {0}")
   public static Iterable<Object[]> data() {
     return Arrays.asList(new Object[][]{
-      {"vim", new String[]{"vim"}},
-      {"vim someFile.txt", new String[]{"vim", "someFile.txt"}},
-      {"vim /path/to/someFile.txt", new String[]{"vim", "/path/to/someFile.txt"}},
-      {"vim someFile.txt \"+normal GW\"", new String[]{"vim", "someFile.txt", "+normal GW"}},
-      {"vim someFile.txt '+normal GW'", new String[]{"vim", "someFile.txt", "+normal GW"}},
-      {"vim someFile.txt +normal\\ GW", new String[]{"vim", "someFile.txt", "+normal GW"}},
-      {"vim someFileWith\\\\Backslash.txt", new String[]{"vim", "someFileWith\\Backslash.txt"}},
-      {"vim someFileWith\\\"doubleQuotes.txt", new String[]{"vim", "someFileWith\"doubleQuotes.txt"}},
-      {"vim someFileWith\\'singleQuotes.txt", new String[]{"vim", "someFileWith'singleQuotes.txt"}},
-      {"vim someFileWithUnnecessary\\Backslash.txt", new String[]{"vim", "someFileWithUnnecessaryBackslash.txt"}},
-      {"vim someFile.txt \"+normal i\\\"GW\"", new String[]{"vim", "someFile.txt", "+normal i\"GW"}},
-      {"vim someFile.txt \"+normal '\\'\"", new String[]{"vim", "someFile.txt", "+normal ''"}},
-      {"vim someFile.txt \"+normal '\\\\'\"", new String[]{"vim", "someFile.txt", "+normal '\\'"}},
-      {"vim   someFile.txt    \"+normal     GW\"", new String[]{"vim", "someFile.txt", "+normal     GW"}},
+      {"vim"                                        , new String[]{"vim"}                                          , null                , null} ,
+      {"vim someFile.txt"                           , new String[]{"vim" , "someFile.txt"}                         , null                , null} ,
+      {"vim /path/to/someFile.txt"                  , new String[]{"vim" , "/path/to/someFile.txt"}                , null                , null} ,
+      {"vim someFile.txt \"+normal GW\""            , new String[]{"vim" , "someFile.txt" , "+normal GW"}          , null                , null} ,
+      {"vim someFile.txt '+normal GW'"              , new String[]{"vim" , "someFile.txt" , "+normal GW"}          , null                , null} ,
+      {"vim someFile.txt +normal\\ GW"              , new String[]{"vim" , "someFile.txt" , "+normal GW"}          , null                , null} ,
+      {"vim someFileWith\\\\Backslash.txt"          , new String[]{"vim" , "someFileWith\\Backslash.txt"}          , null                , null} ,
+      {"vim someFileWith\\\"doubleQuotes.txt"       , new String[]{"vim" , "someFileWith\"doubleQuotes.txt"}       , null                , null} ,
+      {"vim someFileWith\\'singleQuotes.txt"        , new String[]{"vim" , "someFileWith'singleQuotes.txt"}        , null                , null} ,
+      {"vim someFileWithUnnecessary\\Backslash.txt" , new String[]{"vim" , "someFileWithUnnecessaryBackslash.txt"} , null                , null} ,
+      {"vim someFile.txt \"+normal i\\\"GW\""       , new String[]{"vim" , "someFile.txt" , "+normal i\"GW"}       , null                , null} ,
+      {"vim someFile.txt \"+normal '\\'\""          , new String[]{"vim" , "someFile.txt" , "+normal ''"}          , null                , null} ,
+      {"vim someFile.txt \"+normal '\\\\'\""        , new String[]{"vim" , "someFile.txt" , "+normal '\\'"}        , null                , null} ,
+      {"vim   someFile.txt    \"+normal     GW\""   , new String[]{"vim" , "someFile.txt" , "+normal     GW"}      , null                , null} ,
+      {"vim   someFile.txt    \"+normal     GW"     , null                                                         , ParseException.class, "Unclosed quote: \""} ,
     });
   }
 
 
   private final String cmdLine;
   private final String[] expectedOutcome;
+  private final Class<? extends Exception> expectedException;
+  private final String expectedExceptionMsg;
 
-  public CmdlineParserTest(final String cmdLine, final String[] expectedOutcome) {
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
+
+  public CmdlineParserTest(final String cmdLine,
+                           final String[] expectedOutcome,
+                           final Class<? extends Exception> expectedException,
+                           final String expectedExceptionMsg) {
     this.cmdLine= cmdLine;
     this.expectedOutcome= expectedOutcome;
+    this.expectedException= expectedException;
+    this.expectedExceptionMsg= expectedExceptionMsg;
   }
 
   @org.junit.Test
-  public void testSomeMethod() {
+  public void testParseCmdline() {
+    //setup expected exception
+    if (this.expectedException != null) {
+      thrown.expect(this.expectedException);
+      thrown.expectMessage("Unclosed quote: \"");
+    }
+
     assertArrayEquals(this.expectedOutcome, CmdlineParser.parse(this.cmdLine));
   }
 
