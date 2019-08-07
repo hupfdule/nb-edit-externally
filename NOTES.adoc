@@ -1,0 +1,66 @@
+== Commands
+
+- XDG Open
+- XDG Edit (Nur Windows)
+- XDG Print (Nur Windows)
+- XDG Mail
+- XDG Browse
+- Open dir/file in filemanager
+- Open dir in terminal
+- Copy path to dir/file
+- Call custom command (with parameters)
+
+== Detection of applications
+
+- Desktop.isSupported(Action)
+- availablitity of x-terminal-emulator
+- availablitity of x-www-browser
+- availablitity of x-terminal-emulator
+- availablitity of xdg-open
+- availablitity of xdg-mime (+ xdg-mime query default $(file -b --mime-type ${file}))
+- some platform specific defaults
+see also https://stackoverflow.com/a/18004334/572645
+see also https://github.com/jjYBdx4IL/misc/blob/master/swing-utils/src/main/java/com/github/jjYBdx4IL/utils/awt/Desktop.java
+
+ There is
+   - xdg-open (XDG standard)
+   - kde-open (KDE)
+   - gnome-open (Gnome)
+   - exo-open (Xfce)
+   - enlightenment_open (Enlightenment)
+   - what about LXDE?
+xdg-open is a shell script that detects the current environment and calls
+gnome-open, kde-open, etc. accordingly. Of course this doesn‘t provide an
+edit command.
+
+ 
+There is also (sometimes)
+ - x-terminal-emulator
+ - xdg-terminal
+
+
+== User interface
+
+=== Functions
+
+Each above mentioned command should be a function for which a keybinding
+can be added.
+Since both, NB-Use-System-Desktop and QuickOpener-NB have functions that
+are provided in the keybinding config panel, this seems to work
+out-of-the-box.
+
+=== Menu entries
+
+The main menu should normally not need any entry for this tool.
+
+It may be nice to provide a context menu entry in the browser views for the
+configured actions.
+
+=== Icons
+
+Each action should be given an icon that can be added to a toolbar.
+Each icon can be disabled.
+
+=== Configuration panel
+
+A configuration panel is necessary to modify the available commands.
