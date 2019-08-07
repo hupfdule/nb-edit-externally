@@ -12,6 +12,9 @@ import java.util.List;
 import javax.swing.Action;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
+import org.openide.loaders.DataFolder;
+import org.openide.loaders.DataObject;
+import org.openide.loaders.DataShadow;
 import org.openide.util.lookup.ServiceProvider;
 
 
@@ -70,8 +73,11 @@ public class ActionRegistrationService {
           obj = in.getFileObject(name, "shadow");
           // Create if missing.
           if (obj == null) {
-            obj = in.createData(name, "shadow");
-            obj.setAttribute("originalFile", originalFile);
+            DataFolder dataFolder = DataFolder.findFolder(in);
+            DataObject dataObject = DataObject.find(obj);
+            DataShadow.create(dataFolder, dataObject);
+//            obj = in.createData(name, "shadow");
+//            obj.setAttribute("originalFile", originalFile);
           }
         }
 
@@ -82,8 +88,11 @@ public class ActionRegistrationService {
           in = getFolderAt("Shortcuts");
           obj = in.getFileObject(shortcut, "shadow");
           if (obj == null) {
-            obj = in.createData(shortcut, "shadow");
-            obj.setAttribute("originalFile", originalFile);
+            DataFolder dataFolder = DataFolder.findFolder(in);
+            DataObject dataObject = DataObject.find(obj);
+            DataShadow.create(dataFolder, dataObject);
+//            obj = in.createData(shortcut, "shadow");
+//            obj.setAttribute("originalFile", originalFile);
           }
         }
     }
