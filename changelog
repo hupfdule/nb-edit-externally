@@ -1,0 +1,14 @@
+Netbeans Edit Externally changelog
+==================================
+
+
+Version 1.0.1 - 2018-08-15
+--------------------------
+
+  - Fix escaping of paths under MS Windows(#1)
+
+
+Version 1.0.0 - 2018-08-12
+--------------------------
+
+  - Initial release
