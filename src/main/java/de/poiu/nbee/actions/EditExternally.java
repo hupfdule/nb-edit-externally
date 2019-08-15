@@ -22,6 +22,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JEditorPane;
@@ -128,7 +129,9 @@ public final class EditExternally implements ActionListener {
     } else {
       final File actualFile= FileUtil.toFile(file);
 
-      String cmdString= cmdLine.trim()
+      final CmdlineParser cmdlineParser= new CmdlineParser();
+
+      cmdlineParser
         .replace("${file}", actualFile.getAbsolutePath())
         .replace("${fileName}", file.getNameExt())
         .replace("${fileBasename}", file.getName())
@@ -141,7 +144,7 @@ public final class EditExternally implements ActionListener {
         final int column0= NbDocument.findLineColumn(sdocument, caret);
         final String selectedText= editor.getSelectedText();
 
-        cmdString= cmdString
+        cmdlineParser
           .replace("${file}", actualFile.getAbsolutePath())
           .replace("${fileName}", file.getNameExt())
           .replace("${fileBasename}", file.getName())
@@ -156,9 +159,9 @@ public final class EditExternally implements ActionListener {
           ;
       }
 
-      LOGGER.log(Level.INFO, "Calling command {0}", cmdString);
+      final String[] command= cmdlineParser.parse(cmdLine.trim());
 
-      final String[] command= CmdlineParser.parse(cmdString);
+      LOGGER.log(Level.INFO, "Calling command {0}", Arrays.toString(command));
 
       try {
         final String msg= Bundle.CTL_Editing_Status(file.getPath());

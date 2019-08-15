@@ -98,9 +98,15 @@ quote character by preceding it with a backslash.
 Backslashes take precedence over quote. Therefore it is possible to have
 quotes as part of a quoted string like in this example:
 
-
 ----
 myprogram 'my \'quoted\' string'
+----
+
+It is also possible to escape placeholders with a backslash to include them
+literally and prevent them from being expanded:
+
+----
+myprogram literal \${file}
 ----
 
 

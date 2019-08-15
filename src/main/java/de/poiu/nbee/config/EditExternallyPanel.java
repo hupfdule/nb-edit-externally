@@ -40,6 +40,9 @@ final class EditExternallyPanel extends javax.swing.JPanel {
 
   private final EditExternallyOptionsPanelController controller;
 
+  /** Parser to use for validating the command strings. */
+  private final CmdlineParser cmdlineParser= new CmdlineParser();
+
 
   EditExternallyPanel(EditExternallyOptionsPanelController controller) {
     this.controller = controller;
@@ -84,7 +87,7 @@ final class EditExternallyPanel extends javax.swing.JPanel {
       this.tfOpenExternallyCmd,
     }) {
       try {
-        CmdlineParser.parse(c.getText().trim());
+        this.cmdlineParser.parse(c.getText().trim());
       } catch (Exception ex) {
         errorMessages.add(ex.getMessage());
       }
@@ -184,8 +187,8 @@ final class EditExternallyPanel extends javax.swing.JPanel {
 
   boolean valid() {
     try {
-      CmdlineParser.parse(this.tfEditExternallyCmd.getText());
-      CmdlineParser.parse(this.tfOpenExternallyCmd.getText());
+      this.cmdlineParser.parse(this.tfEditExternallyCmd.getText());
+      this.cmdlineParser.parse(this.tfOpenExternallyCmd.getText());
       return true;
     } catch (ParseException ex) {
       return false;
