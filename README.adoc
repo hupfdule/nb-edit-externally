@@ -118,6 +118,20 @@ used:
 Edit externally:: `urxvt -e vim ${file} "+call cursor(${line}, ${column})"`
 Open externally:: `urxvt -e vim ${file}`
 
+Since file paths under MS Windows usually use the backslash as file
+separator, those must be escaped by additional backslashes:
+
+----
+"C:\\Program Files\\Notepad++\\notepad++.exe" -multiInst -n${line} -c${column} "${file}"
+----
+
+An easier, and more readable, approach is using a forward slash as path
+separator:
+
+----
+"C:/Program Files/Notepad++/notepad++.exe" -multiInst -n${line} -c${column} "${file}"
+----
+
 
 === Keybindings
 
