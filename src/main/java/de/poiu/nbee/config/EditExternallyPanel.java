@@ -185,6 +185,7 @@ final class EditExternallyPanel extends javax.swing.JPanel {
   boolean valid() {
     try {
       CmdlineParser.parse(this.tfEditExternallyCmd.getText());
+      CmdlineParser.parse(this.tfOpenExternallyCmd.getText());
       return true;
     } catch (ParseException ex) {
       return false;
