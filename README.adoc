@@ -5,6 +5,7 @@ Marco Herrn <marco@mherrn.de>
 :toc:
 :homepage: https://github.com/hupfdule/nb-edit-externally
 :download-page: https://github.com/hupfdule/nb-edit-externally/releases
+:issue-tracker: https://github.com/hupfdule/nb-edit-externally/issues
 :license-link: https://github.com/hupfdule/nb-edit-externally/blob/master/LICENSE.txt
 :source-highlighter: prettify
 :plugin-version: 1.0.0
@@ -35,7 +36,7 @@ allows editing a file directly from the Projects nodes.
 Usage
 -----
 
-This plugin adds an Entry `Edit Externally` to the following menus:
+This plugin adds an Entry `Edit Externally` to the following menus:
 
  * Main Menu `Tools`
  * Context Menu of each editor window
@@ -58,10 +59,10 @@ There are two commands to be configured:
 
 This plugin decides which one to call based on the information it has about
 the currently selected file. If an open editor for the file is found, the
-`Edit externally` action is called as it allows including cursor location
+`Edit externally` action is called as it allows including cursor location
 information in the command.
 
-If no associated editor is found, the `Open externally` action is called
+If no associated editor is found, the `Open externally` action is called
 instead.
 
 
@@ -75,8 +76,8 @@ ${fileName}:: The file name of the file.
 ${fileBasename}:: The file name of the file without extension.
 ${fileExt}:: The file extension of the file.
 
-The following placeholders can additionally be used for the `Edit
-externally` action:
+The following placeholders can additionally be used for the
+`Edit externally` action:
 
 [horizontal]
 ${line0}:: The line of the cursor location (0-based).
@@ -145,7 +146,6 @@ Use System Desktop::
 This plugin provides actions to open the currently selected file via the
 operating systems default application. It lacks the ability to jump to a
 specific cursor location, but may be used together with `Edit Externally`.
-
 
 
 License
