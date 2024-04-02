@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Marco Herrn.
+ * Copyright 2019-2024 Marco Herrn.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ final class EditExternallyPanel extends javax.swing.JPanel {
 
   private void updateErrorMessages() {
     //FIXME: Run error checks in background and trigger validation here?
-    final List<String> errorMessages= new ArrayList<String>();
+    final List<String> errorMessages= new ArrayList<>();
     for (final JTextComponent c : new JTextComponent[]{
       this.tfEditExternallyCmd,
       this.tfOpenExternallyCmd,

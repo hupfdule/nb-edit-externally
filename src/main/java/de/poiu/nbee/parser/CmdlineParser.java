@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Marco Herrn.
+ * Copyright 2019-2024 Marco Herrn.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ public class CmdlineParser {
 
 
   /** The mappings to use to replace placeholders. */
-  private final Map<String, String> replacements= new HashMap<String, String>();
+  private final Map<String, String> replacements= new HashMap<>();
 
   // start in parse mode
   private Mode mode= Mode.PARSE;
@@ -145,7 +145,7 @@ public class CmdlineParser {
    * @throws ParseException if the given string cannot be parsed in as a valid command line
    */
   public String[] parse(final CharSequence cmdLine) {
-    final List<String> parsedCmdLine= new ArrayList<String>();
+    final List<String> parsedCmdLine= new ArrayList<>();
 
     final StringBuilder sb= new StringBuilder();
     Character quoteChar= null;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Marco Herrn.
+ * Copyright 2019-2024 Marco Herrn.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -111,7 +111,7 @@ public final class EditExternally implements ActionListener {
 
     final CmdType cmdType;
     if (editor == null) {
-      LOGGER.log(Level.INFO, "Calling 'open external' command since not current editor was found.");
+      LOGGER.log(Level.INFO, "Calling 'open external' command since no current editor was found.");
       cmdType= OPEN_EXTERNALLY_CMD;
     } else if (sdocument == null) {
       LOGGER.log(Level.INFO, "Calling 'open external' command since current editors document doesn't contain a StyledDocument, but instead a {0}.", editor.getDocument().getClass());

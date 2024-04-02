@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Marco Herrn.
+ * Copyright 2019-2024 Marco Herrn.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,54 +43,60 @@ public final class EditExternallyOptionsPanelController extends OptionsPanelCont
   private boolean changed;
 
 
+  @Override
   public void update() {
     getPanel().load();
     changed = false;
   }
 
 
+  @Override
   public void applyChanges() {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        getPanel().store();
-        changed = false;
-      }
+    SwingUtilities.invokeLater(() -> {
+      getPanel().store();
+      changed = false;
     });
   }
 
 
+  @Override
   public void cancel() {
     // need not do anything special, if no changes have been persisted yet
   }
 
 
+  @Override
   public boolean isValid() {
     return getPanel().valid();
   }
 
 
+  @Override
   public boolean isChanged() {
     return changed;
   }
 
 
+  @Override
   public HelpCtx getHelpCtx() {
     return new HelpCtx("de.poiu.nbee.nb.editexternally.about");
 //    return null; // new HelpCtx("...ID") if you have a help set
   }
 
 
+  @Override
   public JComponent getComponent(Lookup masterLookup) {
     return getPanel();
   }
 
 
+  @Override
   public void addPropertyChangeListener(PropertyChangeListener l) {
     pcs.addPropertyChangeListener(l);
   }
 
 
+  @Override
   public void removePropertyChangeListener(PropertyChangeListener l) {
     pcs.removePropertyChangeListener(l);
   }
