@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <groupId>de.poiu.nbee</groupId>
   <artifactId>nb-edit-externally</artifactId>
   <version>1.0.2-SNAPSHOT</version>
   <packaging>nbm</packaging>
+
+  <name>nb-edit-externally</name>
   <description>
     Allows opening the currently edited file in an external editor.
       &lt;p&gt;
@@ -20,6 +23,7 @@
     command doesn't support all the placeholders, but allows editing a file directly from the
     Projects nodes.
   </description>
+  <url>https://github.com/hupfdule/nb-edit-externally</url>
 
   <licenses>
     <license>
@@ -50,7 +54,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <netbeans.version>RELEASE90</netbeans.version>
+    <netbeans.version>RELEASE111</netbeans.version>
     <github.global.server>github</github.global.server>
     <keystore>${project.build.outputDirectory}/keystore</keystore>
   </properties>
@@ -120,11 +124,6 @@
       <groupId>org.netbeans.api</groupId>
       <artifactId>org-netbeans-modules-javahelp</artifactId>
       <version>${netbeans.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>javax.annotation</groupId>
-      <artifactId>javax.annotation-api</artifactId>
-      <version>1.3.2</version>
     </dependency>
     <dependency>
       <groupId>javax.help</groupId>
@@ -261,21 +260,13 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <groupId>org.apache.netbeans.utilities</groupId>
         <artifactId>nbm-maven-plugin</artifactId>
         <extensions>true</extensions>
-        <configuration>
-          <useOSGiDependencies>true</useOSGiDependencies>
-          <licenseFile>LICENSE-2.0.txt</licenseFile>
-          <licenseName>Apache 2.0</licenseName>
-          <author>Marco Herrn &lt;marco@mherrn.de&gt;</author>
-          <homePageUrl>https://github.com/hupfdule/nb-edit-externally</homePageUrl>
-          <keystore>${keystore}</keystore>
-          <keystorealias>${project.artifactId}</keystorealias>
-          <keystorepassword>${project.artifactId}</keystorepassword>
-        </configuration>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -284,6 +275,7 @@
           <target>1.8</target>
         </configuration>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
@@ -293,12 +285,7 @@
           </archive>
         </configuration>
       </plugin>
-      <plugin>
-        <artifactId>maven-deploy-plugin</artifactId>
-        <configuration>
-          <altDeploymentRepository>internal.repo::default::file://${project.build.directory}/mvn-repo</altDeploymentRepository>
-        </configuration>
-      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
@@ -382,31 +369,6 @@
                 </goals>
               </execution>
             </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>keytool-maven-plugin</artifactId>
-            <version>1.7</version>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>generateKeyPair</goal>
-                </goals>
-                <phase>generate-resources</phase>
-              </execution>
-            </executions>
-            <configuration>
-              <keystore>${keystore}</keystore>
-              <storepass>${project.artifactId}</storepass>
-              <keypass>${project.artifactId}</keypass>
-              <alias>${project.artifactId}</alias>
-              <dname>cn=${project.scm.developerConnection}, ou=None, L=Des Moines, ST=Iowa, o=${project.artifactId}, c=US</dname>
-              <sigalg>SHA1withDSA</sigalg>
-              <ext />
-              <validity>2000</validity>
-              <keyalg>DSA</keyalg>
-              <keysize>1024</keysize>
-            </configuration>
           </plugin>
         </plugins>
       </build>
