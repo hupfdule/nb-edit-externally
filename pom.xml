@@ -29,7 +29,7 @@
   </licenses>
 
   <scm>
-    <url>https://github.com/hupfdule/apron</url>
+    <url>https://github.com/hupfdule/nb-edit-externally.git</url>
     <connection>scm:git:git://github.com/hupfdule/nb-edit-externally.git</connection>
     <developerConnection>scm:git:git@github.com:hupfdule/nb-edit-externally.git</developerConnection>
     <tag>HEAD</tag>
@@ -226,11 +226,17 @@
           <groupId>org.apache.netbeans.utilities</groupId>
           <artifactId>nbm-maven-plugin</artifactId>
           <version>4.5</version>
+          <extensions>true</extensions>
         </plugin>
         <plugin>
           <groupId>com.github.github</groupId>
           <artifactId>site-maven-plugin</artifactId>
           <version>0.12</version>
+        </plugin>
+        <plugin>
+          <groupId>org.sonatype.plugins</groupId>
+          <artifactId>nexus-staging-maven-plugin</artifactId>
+          <version>1.6.13</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -324,6 +330,17 @@
           </execution>
         </executions>
       </plugin>
+
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <serverId>ossrh</serverId>
+          <nexusUrl>https://oss.sonatype.org</nexusUrl>
+          <autoReleaseAfterClose>false</autoReleaseAfterClose>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
@@ -339,10 +356,15 @@
   </repositories>
 
   <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <name>Sonatype Nexus Snapshots</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
     <repository>
-      <id>internal.repo</id>
-      <name>Temporary Staging Repository</name>
-      <url>file://${project.build.directory}/mvn-repo</url>
+      <id>ossrh</id>
+      <name>Nexus Release Repository</name>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
   </distributionManagement>
 
