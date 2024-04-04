@@ -86,10 +86,10 @@ import static de.poiu.nbee.config.Prefs.NETBEANS_PREFS_ID;
 @Messages({
   "CTL_EditExternally=Edit Externally",
   "# {0} - the file to be edited",
-  "CTL_Editing_Status=Editing file {0} in vim",
+  "CTL_Editing_Status=Editing file {0} in external editor",
   "# {0} - the file to be opened",
   "# {1} - the reasonf for error",
-  "CTL_Editing_Error=Error opening vim editor for {0}: {1}"})
+  "CTL_Editing_Error=Error opening external editor for {0}: {1}"})
 public final class EditExternally implements ActionListener {
 
   private static final Logger LOGGER= Logger.getLogger(EditExternally.class.getName());
