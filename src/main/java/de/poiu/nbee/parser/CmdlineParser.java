@@ -224,7 +224,7 @@ public class CmdlineParser {
 
     // if a placeholder wasn't closed, it means we could not parse the commandline correctly
     if (sbPlaceholder.length() != 0) {
-      throw new ParseException("Unclosed placeholder: "+sb.toString(), cmdLine);
+      throw new ParseException("Unclosed placeholder: "+sbPlaceholder.toString(), cmdLine);
     }
 
     // an unclosed quote means we could not parse the commandline correctly
