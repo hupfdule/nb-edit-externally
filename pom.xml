@@ -273,6 +273,7 @@
         <configuration>
           <release>17</release>
           <annotationProcessors>
+            <!-- add the matching processor here whenever a new NetBeans registration annotation is introduced, -->
             <annotationProcessor>org.netbeans.modules.openide.util.NbBundleProcessor</annotationProcessor>
             <annotationProcessor>org.netbeans.modules.openide.util.ServiceProviderProcessor</annotationProcessor>
             <annotationProcessor>org.netbeans.modules.openide.awt.ActionProcessor</annotationProcessor>
