@@ -57,7 +57,7 @@ import java.util.logging.Logger;
  */
 public class CmdlineParser {
 
-  private static final Logger LOGGER= Logger.getLogger(CmdlineParser.class.toString());
+  private static final Logger LOGGER= Logger.getLogger(CmdlineParser.class.getName());
 
   private static enum Mode {
     /** The normal parse mode. */
