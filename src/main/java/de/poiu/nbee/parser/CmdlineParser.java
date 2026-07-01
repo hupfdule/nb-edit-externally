@@ -71,9 +71,6 @@ public class CmdlineParser {
   /** The mappings to use to replace placeholders. */
   private final Map<String, String> replacements= new HashMap<>();
 
-  // start in parse mode
-  private Mode mode= Mode.PARSE;
-
 
 
   /**
@@ -151,6 +148,9 @@ public class CmdlineParser {
     Character quoteChar= null;
     final StringBuilder sbPlaceholder= new StringBuilder();
 
+    // start in parse mode
+    Mode mode= Mode.PARSE;
+
     for (int i= 0; i< cmdLine.length(); i++) {
       final char c= cmdLine.charAt(i);
 
@@ -189,24 +189,24 @@ public class CmdlineParser {
           }
           break;
         case '$':
-          if (this.mode == Mode.REPLACE) {
+          if (mode == Mode.REPLACE) {
             throw new ParseException("Invalid character " + c + " found in placeholder " + sbPlaceholder.toString(), cmdLine);
           } else if (cmdLine.length() < i + 2) {
             // a single $ at the end of the command line is used literally
             sb.append(c);
           } else if (cmdLine.charAt(i + 1) == '{') {
             // switch to REPLACE mode
-            this.mode= Mode.REPLACE;
+            mode= Mode.REPLACE;
             sbPlaceholder
               .append(c)
               .append(cmdLine.charAt(++i));
           }
           break;
         case '}':
-          if (this.mode == Mode.REPLACE) {
+          if (mode == Mode.REPLACE) {
             // end REPLACE mode
             sbPlaceholder.append(c);
-            this.mode= Mode.PARSE;
+            mode= Mode.PARSE;
             sb.append(replace(sbPlaceholder.toString()));
             sbPlaceholder.delete(0, sbPlaceholder.length());
           } else {
@@ -214,7 +214,7 @@ public class CmdlineParser {
           }
           break;
         default:
-          if (this.mode == Mode.REPLACE) {
+          if (mode == Mode.REPLACE) {
             sbPlaceholder.append(c);
           } else {
             sb.append(c);
