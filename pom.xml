@@ -272,6 +272,13 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <release>17</release>
+          <annotationProcessors>
+            <annotationProcessor>org.netbeans.modules.openide.util.NbBundleProcessor</annotationProcessor>
+            <annotationProcessor>org.netbeans.modules.openide.util.ServiceProviderProcessor</annotationProcessor>
+            <annotationProcessor>org.netbeans.modules.openide.awt.ActionProcessor</annotationProcessor>
+            <annotationProcessor>org.netbeans.modules.options.OptionsPanelControllerProcessor</annotationProcessor>
+            <annotationProcessor>org.netbeans.modules.javahelp.HelpSetRegistrationProcessor</annotationProcessor>
+          </annotationProcessors>
         </configuration>
       </plugin>
 
