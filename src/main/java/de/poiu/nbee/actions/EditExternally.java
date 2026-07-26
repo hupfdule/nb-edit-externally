@@ -203,7 +203,11 @@ public final class EditExternally implements ActionListener {
    * @return the current DataObject
    */
   private DataObject getCurrentDataObject() {
-    return TopComponent.getRegistry().getActivated().getLookup().lookup(DataObject.class);
+    final TopComponent activated= TopComponent.getRegistry().getActivated();
+    if (activated == null) {
+      return null;
+    }
+    return activated.getLookup().lookup(DataObject.class);
   }
 
 
