@@ -308,7 +308,7 @@ public final class EditExternally extends AbstractAction implements ContextAware
     for (Node node : currentNodes) {
       final EditorCookie ec = node.getLookup().lookup(EditorCookie.class);
       if (ec != null) {
-        // FIXME: This is disabled, since NbDocument.fineRecentEditorPane() doesn't always return an
+        // FIXME: This is disabled, since NbDocument.findRecentEditorPane() doesn't always return an
         //        editor. For example after restarting netbeans, it returns null, even though the
         //        selected node has an open editor somewhere.
 //        final JEditorPane editorPane= NbDocument.findRecentEditorPane(ec);
