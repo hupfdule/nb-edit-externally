@@ -19,12 +19,13 @@ import de.poiu.nbee.config.Prefs;
 import de.poiu.nbee.config.Prefs.CmdType;
 import de.poiu.nbee.parser.CmdlineParser;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JEditorPane;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.StyledDocument;
@@ -43,9 +44,15 @@ import org.openide.loaders.DataObject;
 import org.openide.loaders.DataShadow;
 import org.openide.nodes.Node;
 import org.openide.text.NbDocument;
+import org.openide.util.ContextAwareAction;
 import org.openide.util.Exceptions;
+import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
+import org.openide.util.LookupEvent;
+import org.openide.util.LookupListener;
 import org.openide.util.NbBundle.Messages;
+import org.openide.util.Utilities;
+import org.openide.util.WeakListeners;
 import org.openide.windows.TopComponent;
 
 import static de.poiu.nbee.config.Prefs.CmdType.EDIT_EXTERNALLY_CMD;
@@ -64,6 +71,17 @@ import static de.poiu.nbee.config.Prefs.NETBEANS_PREFS_ID;
  * current editor is available and the current location of the cursor in this is known.
  * If the cursor position is not known for the current file, the "open externally" command is used
  * that doesn't support location information to be configured.
+ * <p>
+ * Implementation note: this class tracks its own enabled state directly against
+ * <code>Utilities.actionsGlobalContext()</code> by default, because NetBeans binds the
+ * plain no-arg-constructed instance directly to the toolbar/menu placements
+ * (<code>Toolbars/File</code>, <code>Editors/Toolbars/Default</code>, <code>UI/ToolActions/Files</code>)
+ * without ever calling {@link #createContextAwareInstance(org.openide.util.Lookup)} for those
+ * spots -- that method is only consulted by NetBeans' node-popup building code
+ * (<code>Utilities.actionsToPopup</code>), i.e. for right-click context menus. Implementing
+ * {@link ContextAwareAction} is kept anyway since it improves correctness for those popups
+ * (they get the actually clicked node's lookup instead of the global selection), but the
+ * default/global tracking must not depend on it being called.
  *
  * @author Marco Herrn
  */
@@ -90,9 +108,54 @@ import static de.poiu.nbee.config.Prefs.NETBEANS_PREFS_ID;
   "# {0} - the file to be opened",
   "# {1} - the reasonf for error",
   "CTL_Editing_Error=Error opening external editor for {0}: {1}"})
-public final class EditExternally implements ActionListener {
+public final class EditExternally extends AbstractAction implements ContextAwareAction, LookupListener {
 
   private static final Logger LOGGER= Logger.getLogger(EditExternally.class.getName());
+
+  private final Lookup                    context;
+  private final Lookup.Result<DataObject> lookupResult;
+
+
+  public EditExternally() {
+    this(Utilities.actionsGlobalContext());
+  }
+
+
+  private EditExternally(final Lookup context) {
+    super(Bundle.CTL_EditExternally());
+    // Unfortunately we need to explicitly set the Icon if we are using an Action instead of just an ActionListener.
+    this.putValue(Action.SMALL_ICON, ImageUtilities.loadImageIcon("de/poiu/nbee/icons/edit-externally.png", false));
+    this.context     = context;
+    this.lookupResult= context.lookupResult(DataObject.class);
+    this.lookupResult.addLookupListener(WeakListeners.create(LookupListener.class, this, this.lookupResult));
+    this.updateEnabledState();
+  }
+
+
+  @Override
+  public void resultChanged(LookupEvent ev) {
+    this.updateEnabledState();
+  }
+
+
+  /**
+   * Updates the enabled state of this action based on whether a <code>DataObject</code>
+   * is available in this instance's lookup context.
+   */
+  private void updateEnabledState() {
+    this.setEnabled(!this.lookupResult.allInstances().isEmpty());
+  }
+
+
+  /**
+   * Consulted by NetBeans' node-popup building code (right-click context menus) to obtain an
+   * instance bound to the lookup of the actually clicked node, instead of the global selection.
+   * Not consulted for the toolbar/menu-bar placements; see the class-level note.
+   */
+  @Override
+  public Action createContextAwareInstance(Lookup context) {
+    return new EditExternally(context);
+  }
 
 
   @Override
@@ -203,11 +266,7 @@ public final class EditExternally implements ActionListener {
    * @return the current DataObject
    */
   private DataObject getCurrentDataObject() {
-    final TopComponent activated= TopComponent.getRegistry().getActivated();
-    if (activated == null) {
-      return null;
-    }
-    return activated.getLookup().lookup(DataObject.class);
+    return this.context.lookup(DataObject.class);
   }
 
 
