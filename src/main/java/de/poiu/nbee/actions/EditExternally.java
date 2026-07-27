@@ -99,7 +99,7 @@ import static de.poiu.nbee.config.Prefs.NETBEANS_PREFS_ID;
   @ActionReference(path = "Editors/Toolbars/Default", position = 10000),
   @ActionReference(path = "Editors/Popup", position = 1425, separatorBefore = 1422),
 //  @ActionReference(path = "Editors/TabActions"), // disabled. Always opens the _current_ editor, not the clicked one. Same problem with 'Copy file path'
-  @ActionReference(path = "UI/ToolActions/Files"), // Menu/Tools _and_ Tools popup menu"?
+  @ActionReference(path = "UI/ToolActions/Files", position = 2500), // Menu/Tools _and_ Tools popup menu"?
 })
 @Messages({
   "CTL_EditExternally=Edit Externally",
