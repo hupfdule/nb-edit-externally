@@ -91,15 +91,16 @@ import static de.poiu.nbee.config.Prefs.NETBEANS_PREFS_ID;
 )
 @ActionRegistration(
   iconBase = "de/poiu/nbee/icons/edit-externally.png",
-  displayName = "#CTL_EditExternally"
+  displayName = "#CTL_EditExternally",
+  lazy = false // we need the action object to exist from the start to track the global selection lookup
 )
 @ActionReferences({
 //  @ActionReference(path = "Menu/Tools", position = 0), //redundant if "UI/ToolActions/Files" is registered
-  @ActionReference(path = "Toolbars/File", position = 1000),
-  @ActionReference(path = "Editors/Toolbars/Default", position = 10000),
+  @ActionReference(path = "Toolbars/File", position = 1002),
+  @ActionReference(path = "Editors/Toolbars/Default", position = 10002),
   @ActionReference(path = "Editors/Popup", position = 1425, separatorBefore = 1422),
 //  @ActionReference(path = "Editors/TabActions"), // disabled. Always opens the _current_ editor, not the clicked one. Same problem with 'Copy file path'
-  @ActionReference(path = "UI/ToolActions/Files", position = 2500), // Menu/Tools _and_ Tools popup menu"?
+  @ActionReference(path = "UI/ToolActions/Files", position = 2502), // Menu/Tools _and_ Tools popup menu"?
 })
 @Messages({
   "CTL_EditExternally=Edit Externally",
