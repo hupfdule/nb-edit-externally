@@ -44,8 +44,8 @@ import java.util.logging.Logger;
  * </ul> *
  * Recognized quote characters:
  * <ul>
- *   <li>single quotes (ord 34)</li>
- *   <li>double quotes (ord 39)</li>
+ *   <li>single quotes (ord 39)</li>
+ *   <li>double quotes (ord 34)</li>
  * </ul>
  * <p>
  * Certain placeholders can be replaced in the given command line string. The placeholders must be
