@@ -80,7 +80,6 @@ public final class EditExternallyOptionsPanelController extends OptionsPanelCont
   @Override
   public HelpCtx getHelpCtx() {
     return new HelpCtx("de.poiu.nbee.nb.editexternally.about");
-//    return null; // new HelpCtx("...ID") if you have a help set
   }
 
 
