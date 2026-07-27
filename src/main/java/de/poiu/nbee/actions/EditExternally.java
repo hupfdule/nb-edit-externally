@@ -166,7 +166,7 @@ public final class EditExternally extends AbstractAction implements ContextAware
     LOGGER.entering("EditExternally", "actionPerformed", ev);
 
     final DataObject dataObject= this.getCurrentDataObject();
-    final FileObject file= this.getFileObjectFrom(dataObject);
+    final FileObject file      = this.getFileObjectFrom(dataObject);
     if (file == null) {
       LOGGER.log(Level.INFO, "Ignoring execution request, since no current file was found");
       return;
@@ -261,9 +261,9 @@ public final class EditExternally extends AbstractAction implements ContextAware
    */
   private void openOptionsPanel(final CmdType cmdType) {
     final String action= cmdType == EDIT_EXTERNALLY_CMD ? "edit" : "open";
-    final String msg= "<html>No command to "+action+" file externally is defined yet.<br/>Open configuration panel now?</html>";
+    final String msg          = "<html>No command to "+action+" file externally is defined yet.<br/>Open configuration panel now?</html>";
     final NotifyDescriptor nd = new NotifyDescriptor.Confirmation(msg, NotifyDescriptor.YES_NO_OPTION);
-    final Object result = DialogDisplayer.getDefault().notify(nd);
+    final Object result       = DialogDisplayer.getDefault().notify(nd);
     if (NotifyDescriptor.YES_OPTION == result) {
       OptionsDisplayer.getDefault().open("Advanced"+ "/" + NETBEANS_PREFS_ID);
     }
@@ -284,11 +284,11 @@ public final class EditExternally extends AbstractAction implements ContextAware
    */
   private void openOptionsPanelForInvalidCommand(final CmdType cmdType, final ParseException ex) {
     LOGGER.log(Level.WARNING, "Configured command for " + cmdType + " could not be parsed", ex);
-    final String action= cmdType == EDIT_EXTERNALLY_CMD ? "edit" : "open";
-    final String msg= "<html>The configured command to "+action+" file externally is invalid:<br/>"
-      + ex.getLocalizedMessage() + "<br/>Open configuration panel now?</html>";
+    final String action       = cmdType == EDIT_EXTERNALLY_CMD ? "edit" : "open";
+    final String msg          = "<html>The configured command to "+action+" file externally is invalid:<br/>"
+                                + ex.getLocalizedMessage() + "<br/>Open configuration panel now?</html>";
     final NotifyDescriptor nd = new NotifyDescriptor.Confirmation(msg, NotifyDescriptor.YES_NO_OPTION);
-    final Object result = DialogDisplayer.getDefault().notify(nd);
+    final Object result       = DialogDisplayer.getDefault().notify(nd);
     if (NotifyDescriptor.YES_OPTION == result) {
       OptionsDisplayer.getDefault().open("Advanced"+ "/" + NETBEANS_PREFS_ID);
     }
