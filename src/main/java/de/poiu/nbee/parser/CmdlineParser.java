@@ -200,6 +200,9 @@ public class CmdlineParser {
             sbPlaceholder
               .append(c)
               .append(cmdLine.charAt(++i));
+          } else {
+            // a $ not starting a "${" placeholder is used literally
+            sb.append(c);
           }
           break;
         case '}':
