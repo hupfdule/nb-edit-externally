@@ -81,6 +81,27 @@ public class CmdlineParserTest {
          new String[]{"vim", "${file", "35"}                                                                                          , null                , null} ,
       {"vim   +$"                                                                                 , new String[]{},
          new String[]{"vim" , "+$"}                                                                                                   , null                , null} ,
+      // a '$' not starting a "${" placeholder (and not at the end of the string) must be kept literally
+      {"echo $HOME foo"                                                                           , new String[]{},
+         new String[]{"echo" , "$HOME" , "foo"}                                                                                       , null                , null} ,
+      {"a$b"                                                                                       , new String[]{},
+         new String[]{"a$b"}                                                                                                          , null                , null} ,
+      {"$$"                                                                                        , new String[]{},
+         new String[]{"$$"}                                                                                                           , null                , null} ,
+      {""                                                                                          , new String[]{},
+         new String[]{}                                                                                                               , null                , null} ,
+      {"   \t\n  "                                                                                 , new String[]{},
+         new String[]{}                                                                                                               , null                , null} ,
+      {"vim ${unknownPlaceholder}"                                                                 , new String[]{},
+         new String[]{"vim" , "${unknownPlaceholder}"}                                                                                , null                , null} ,
+      {"prefix${empty}suffix"                                                                      , new String[]{"${empty}", ""},
+         new String[]{"prefixsuffix"}                                                                                                 , null                , null} ,
+      {"${a}${b}"                                                                                  , new String[]{"${a}", "AAA", "${b}", "BBB"},
+         new String[]{"AAABBB"}                                                                                                       , null                , null} ,
+      {"abc\"def\""                                                                                , new String[]{},
+         new String[]{"abcdef"}                                                                                                       , null                , null} ,
+      {"vim ${file"                                                                                , new String[]{},
+         null                                                                                                                         , ParseException.class, "Unclosed placeholder: ${file"} ,
     });
   }
 
