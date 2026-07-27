@@ -43,7 +43,6 @@ import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataObject;
 import org.openide.loaders.DataShadow;
-import org.openide.nodes.Node;
 import org.openide.text.NbDocument;
 import org.openide.util.ContextAwareAction;
 import org.openide.util.Exceptions;
@@ -54,7 +53,6 @@ import org.openide.util.LookupListener;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.Utilities;
 import org.openide.util.WeakListeners;
-import org.openide.windows.TopComponent;
 
 import static de.poiu.nbee.config.Prefs.CmdType.EDIT_EXTERNALLY_CMD;
 import static de.poiu.nbee.config.Prefs.CmdType.OPEN_EXTERNALLY_CMD;
@@ -342,35 +340,27 @@ public final class EditExternally extends AbstractAction implements ContextAware
    * @return the current editor or <code>null</code> if no editor could be found.
    */
   private JTextComponent getCurrentEditor() {
-    final Node[] currentNodes= TopComponent.getRegistry().getCurrentNodes();
-    if (null == currentNodes) {
-      LOGGER.log(Level.INFO, "No current node");
+    final EditorCookie ec= this.context.lookup(EditorCookie.class);
+    if (ec == null) {
+      LOGGER.log(Level.INFO, "No EditorCookie found in the current context");
       return null;
     }
 
-    // FIXME: At the moment this supports only opening 1 file.
-    //        If multiple nodes are selected only one of them will be opened!
-    for (Node node : currentNodes) {
-      final EditorCookie ec = node.getLookup().lookup(EditorCookie.class);
-      if (ec != null) {
-        // FIXME: This is disabled, since NbDocument.findRecentEditorPane() doesn't always return an
-        //        editor. For example after restarting netbeans, it returns null, even though the
-        //        selected node has an open editor somewhere.
-//        final JEditorPane editorPane= NbDocument.findRecentEditorPane(ec);
-//        if (editorPane != null) {
-//          return editorPane;
-//        }
-        final JEditorPane[] editorPanes = ec.getOpenedPanes();
-        if (editorPanes == null) {
-          continue;
-        } else if (editorPanes.length == 1) {
-          return editorPanes[0];
-        } else {
-          LOGGER.log(Level.WARNING, "More than one editor pane found for current editor ({0} panes)", editorPanes.length);
-          return editorPanes[0];
-        }
-      }
+    // FIXME: This is disabled, since NbDocument.findRecentEditorPane() doesn't always return an
+    //        editor. For example after restarting netbeans, it returns null, even though the
+    //        selected node has an open editor somewhere.
+//    final JEditorPane editorPane= NbDocument.findRecentEditorPane(ec);
+//    if (editorPane != null) {
+//      return editorPane;
+//    }
+    final JEditorPane[] editorPanes = ec.getOpenedPanes();
+    if (editorPanes == null || editorPanes.length == 0) {
+      return null;
+    } else if (editorPanes.length == 1) {
+      return editorPanes[0];
+    } else {
+      LOGGER.log(Level.WARNING, "More than one editor pane found for current editor ({0} panes)", editorPanes.length);
+      return editorPanes[0];
     }
-    return null;
   }
 }
