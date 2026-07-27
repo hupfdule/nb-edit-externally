@@ -91,6 +91,9 @@ import static de.poiu.nbee.config.Prefs.NETBEANS_PREFS_ID;
   id = "de.poiu.nbee.EditExternally"
 )
 @ActionRegistration(
+  // iconBase could be omitted, since it is unused on eager (lazy=false) registrations -- the icon is
+  // set programmatically via putValue(Action.SMALL_ICON, ...) in the constructor instead.
+  // We leave it here as we do with displayName, anyway.
   iconBase = "de/poiu/nbee/icons/edit-externally.png",
   displayName = "#CTL_EditExternally",
   lazy = false // we need the action object to exist from the start to track the global selection lookup
@@ -262,11 +265,7 @@ public final class EditExternally extends AbstractAction implements ContextAware
   private void openOptionsPanel(final CmdType cmdType) {
     final String action= cmdType == EDIT_EXTERNALLY_CMD ? "edit" : "open";
     final String msg          = "<html>No command to "+action+" file externally is defined yet.<br/>Open configuration panel now?</html>";
-    final NotifyDescriptor nd = new NotifyDescriptor.Confirmation(msg, NotifyDescriptor.YES_NO_OPTION);
-    final Object result       = DialogDisplayer.getDefault().notify(nd);
-    if (NotifyDescriptor.YES_OPTION == result) {
-      OptionsDisplayer.getDefault().open("Advanced"+ "/" + NETBEANS_PREFS_ID);
-    }
+    this.confirmAndOpenOptionsPanel(msg);
   }
 
 
@@ -287,7 +286,19 @@ public final class EditExternally extends AbstractAction implements ContextAware
     final String action       = cmdType == EDIT_EXTERNALLY_CMD ? "edit" : "open";
     final String msg          = "<html>The configured command to "+action+" file externally is invalid:<br/>"
                                 + ex.getLocalizedMessage() + "<br/>Open configuration panel now?</html>";
-    final NotifyDescriptor nd = new NotifyDescriptor.Confirmation(msg, NotifyDescriptor.YES_NO_OPTION);
+    this.confirmAndOpenOptionsPanel(msg);
+  }
+
+
+  /**
+   * Asks the user (via the given, already fully formatted HTML message) whether to open the
+   * Options Panel for this plugin now, and opens it if confirmed.
+   *
+   * @param htmlMessage the fully formatted (including surrounding <code>&lt;html&gt;</code> tags)
+   *                     confirmation message to show to the user
+   */
+  private void confirmAndOpenOptionsPanel(final String htmlMessage) {
+    final NotifyDescriptor nd = new NotifyDescriptor.Confirmation(htmlMessage, NotifyDescriptor.YES_NO_OPTION);
     final Object result       = DialogDisplayer.getDefault().notify(nd);
     if (NotifyDescriptor.YES_OPTION == result) {
       OptionsDisplayer.getDefault().open("Advanced"+ "/" + NETBEANS_PREFS_ID);
