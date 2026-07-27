@@ -123,8 +123,9 @@ public final class EditExternally extends AbstractAction implements ContextAware
 
   private EditExternally(final Lookup context) {
     super(Bundle.CTL_EditExternally());
-    // Unfortunately we need to explicitly set the Icon if we are using an Action instead of just an ActionListener.
+    // Unfortunately we need to explicitly set the Icon and Tooltip text if we are using an Action instead of just an ActionListener.
     this.putValue(Action.SMALL_ICON, ImageUtilities.loadImageIcon("de/poiu/nbee/icons/edit-externally.png", false));
+    this.putValue(Action.SHORT_DESCRIPTION, Bundle.CTL_EditExternally());
     this.context     = context;
     this.lookupResult= context.lookupResult(DataObject.class);
     this.lookupResult.addLookupListener(WeakListeners.create(LookupListener.class, this, this.lookupResult));
