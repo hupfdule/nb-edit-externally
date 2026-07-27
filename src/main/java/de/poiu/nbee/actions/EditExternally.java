@@ -18,6 +18,7 @@ package de.poiu.nbee.actions;
 import de.poiu.nbee.config.Prefs;
 import de.poiu.nbee.config.Prefs.CmdType;
 import de.poiu.nbee.parser.CmdlineParser;
+import de.poiu.nbee.parser.ParseException;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
@@ -224,7 +225,13 @@ public final class EditExternally extends AbstractAction implements ContextAware
           ;
       }
 
-      final String[] command= cmdlineParser.parse(cmdLine.trim());
+      final String[] command;
+      try {
+        command= cmdlineParser.parse(cmdLine.trim());
+      } catch (ParseException ex) {
+        this.openOptionsPanelForInvalidCommand(cmdType, ex);
+        return;
+      }
 
       LOGGER.log(Level.INFO, "Calling command {0}", Arrays.toString(command));
 
@@ -255,6 +262,31 @@ public final class EditExternally extends AbstractAction implements ContextAware
   private void openOptionsPanel(final CmdType cmdType) {
     final String action= cmdType == EDIT_EXTERNALLY_CMD ? "edit" : "open";
     final String msg= "<html>No command to "+action+" file externally is defined yet.<br/>Open configuration panel now?</html>";
+    final NotifyDescriptor nd = new NotifyDescriptor.Confirmation(msg, NotifyDescriptor.YES_NO_OPTION);
+    final Object result = DialogDisplayer.getDefault().notify(nd);
+    if (NotifyDescriptor.YES_OPTION == result) {
+      OptionsDisplayer.getDefault().open("Advanced"+ "/" + NETBEANS_PREFS_ID);
+    }
+  }
+
+
+  /**
+   * Opens the Options Panel for configuring this plugin.
+   * <p>
+   * This should be called if the configured command for a certain <code>CmdType</code> could
+   * not be parsed.
+   * <p>
+   * It informs the user of the invalid configuration (including the parse error), logs the
+   * exception, and provides the opportunity to open the Options Panel for this plugin.
+   *
+   * @param cmdType the command type whose configured command is invalid
+   * @param ex the exception describing why the configured command could not be parsed
+   */
+  private void openOptionsPanelForInvalidCommand(final CmdType cmdType, final ParseException ex) {
+    LOGGER.log(Level.WARNING, "Configured command for " + cmdType + " could not be parsed", ex);
+    final String action= cmdType == EDIT_EXTERNALLY_CMD ? "edit" : "open";
+    final String msg= "<html>The configured command to "+action+" file externally is invalid:<br/>"
+      + ex.getLocalizedMessage() + "<br/>Open configuration panel now?</html>";
     final NotifyDescriptor nd = new NotifyDescriptor.Confirmation(msg, NotifyDescriptor.YES_NO_OPTION);
     final Object result = DialogDisplayer.getDefault().notify(nd);
     if (NotifyDescriptor.YES_OPTION == result) {
