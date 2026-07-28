@@ -121,16 +121,6 @@
       <version>${netbeans.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.netbeans.api</groupId>
-      <artifactId>org-netbeans-modules-javahelp</artifactId>
-      <version>${netbeans.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>javax.help</groupId>
-      <artifactId>javahelp</artifactId>
-      <version>2.0.05</version>
-    </dependency>
-    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.13.2</version>
@@ -278,7 +268,6 @@
             <annotationProcessor>org.netbeans.modules.openide.util.ServiceProviderProcessor</annotationProcessor>
             <annotationProcessor>org.netbeans.modules.openide.awt.ActionProcessor</annotationProcessor>
             <annotationProcessor>org.netbeans.modules.options.OptionsPanelControllerProcessor</annotationProcessor>
-            <annotationProcessor>org.netbeans.modules.javahelp.HelpSetRegistrationProcessor</annotationProcessor>
           </annotationProcessors>
         </configuration>
       </plugin>
