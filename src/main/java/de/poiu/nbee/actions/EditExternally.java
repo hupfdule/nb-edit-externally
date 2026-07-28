@@ -152,7 +152,7 @@ public final class EditExternally implements ActionListener {
       cmdType= EDIT_EXTERNALLY_CMD;
     }
 
-    final Prefs prefs= Lookup.getDefault().lookup(Prefs.class);
+    final Prefs  prefs  = Lookup.getDefault().lookup(Prefs.class);
     final String cmdLine= prefs.load(cmdType.name());
 
     if (cmdLine == null || cmdLine.trim().isEmpty()) {
