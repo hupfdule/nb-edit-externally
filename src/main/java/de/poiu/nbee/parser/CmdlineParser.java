@@ -257,7 +257,7 @@ public class CmdlineParser {
     if (this.replacements.containsKey(placeholder)) {
       return this.replacements.get(placeholder);
     } else {
-      LOGGER.log(Level.INFO, "No replacement mapping found for placeholder {0}. Including it literally in the command.", placeholder);
+      LOGGER.log(Level.WARNING, "No replacement mapping found for placeholder {0}. Including it literally in the command.", placeholder);
       return placeholder;
     }
   }
