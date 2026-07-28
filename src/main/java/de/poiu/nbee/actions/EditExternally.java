@@ -137,8 +137,8 @@ public final class EditExternally implements ActionListener {
       return;
     }
 
-    final JTextComponent editor= getCurrentEditor(dataObject);
-    final StyledDocument sdocument = editor != null ? (StyledDocument) editor.getDocument() : null;
+    final JTextComponent editor   = getCurrentEditor(dataObject);
+    final StyledDocument sdocument= editor != null ? (StyledDocument) editor.getDocument() : null;
 
     final CmdType cmdType;
     if (editor == null) {
@@ -170,9 +170,9 @@ public final class EditExternally implements ActionListener {
         ;
 
       if (cmdType == EDIT_EXTERNALLY_CMD) {
-        final int caret= editor.getCaretPosition();
-        final int line0= NbDocument.findLineNumber(sdocument, caret);
-        final int column0= NbDocument.findLineColumn(sdocument, caret);
+        final int caret          = editor.getCaretPosition();
+        final int line0          = NbDocument.findLineNumber(sdocument, caret);
+        final int column0        = NbDocument.findLineColumn(sdocument, caret);
         final String selectedText= editor.getSelectedText();
 
         cmdlineParser
