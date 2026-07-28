@@ -71,22 +71,26 @@ instead.
 The following placeholders can be used for both commands:
 
 [horizontal]
-${file}:: The absolute path to the file.
-${fileName}:: The file name of the file.
+${file}::         The absolute path to the file.
+${fileName}::     The file name of the file.
 ${fileBasename}:: The file name of the file without extension.
-${fileExt}:: The file extension of the file.
+${fileExt}::      The file extension of the file.
 
 The following placeholders can additionally be used for the
 `Edit externally` action:
 
 [horizontal]
-${line0}:: The line of the cursor location (0-based).
-${line}:: The line of the cursor location (1-based).
-${column0}:: The column of the cursor location (0-based).
-${column}:: The column of the cursor location (1-based).
-//${selectedText}:: The currently selected text.
-//${selectionStart}:: The location of the selection start (number of chars).
-//${selectionEnd}:: The location of the selection end (number of chars).
+${line0}::                  The line of the cursor location (0-based).
+${line}::                   The line of the cursor location (1-based).
+${column0}::                The column of the cursor location (0-based).
+${column}::                 The column of the cursor location (1-based).
+${selectedText}::           The currently selected text or an empty string if no text is selected.
+${selectionStart0}::        The location of the first character of a selection (number of chars in the file, 0-based) or -1 if no text is selected.
+${selectionStart}::         The location of the first character of a selection (number of chars in the file, 1-based) or -1 if no text is selected.
+${selectionEnd0}::          The location of the last character of a selection (number of chars in the file, 0-based) or -1 if no text is selected.
+${selectionEnd}::           The location of the last character of a selection (number of chars in the file, 1-based) or -1 if no text is selected.
+${selectionEndExclusive0}:: The location of the first character _after_ the selection (number of chars in the file, 0-based) or -1 if no text is selected.
+${selectionEndExclusive}::  The location of the first character _after_ the selection (number of chars in the file, 0-based) or -1 if no text is selected.
 
 
 === Quoting and Escaping

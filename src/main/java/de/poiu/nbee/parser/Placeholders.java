@@ -28,17 +28,21 @@ package de.poiu.nbee.parser;
  */
 public final class Placeholders {
 
-  public static final String FILE           = "${file}";
-  public static final String FILE_NAME      = "${fileName}";
-  public static final String FILE_BASENAME  = "${fileBasename}";
-  public static final String FILE_EXT       = "${fileExt}";
-  public static final String LINE0          = "${line0}";
-  public static final String LINE           = "${line}";
-  public static final String COLUMN0        = "${column0}";
-  public static final String COLUMN         = "${column}";
-  public static final String SELECTED_TEXT  = "${selectedText}";
-  public static final String SELECTION_START= "${selectionStart}";
-  public static final String SELECTION_END  = "${selectionEnd}";
+  public static final String FILE                     = "${file}";
+  public static final String FILE_NAME                = "${fileName}";
+  public static final String FILE_BASENAME            = "${fileBasename}";
+  public static final String FILE_EXT                 = "${fileExt}";
+  public static final String LINE0                    = "${line0}";
+  public static final String LINE                     = "${line}";
+  public static final String COLUMN0                  = "${column0}";
+  public static final String COLUMN                   = "${column}";
+  public static final String SELECTED_TEXT            = "${selectedText}";
+  public static final String SELECTION_START0         = "${selectionStart0}";
+  public static final String SELECTION_START          = "${selectionStart}";
+  public static final String SELECTION_END0           = "${selectionEnd0}";
+  public static final String SELECTION_END            = "${selectionEnd}";
+  public static final String SELECTION_END_EXCLUSIVE0 = "${selectionEndExclusive0}";
+  public static final String SELECTION_END_EXCLUSIVE  = "${selectionEndExclusive}";
 
   /**
    * Placeholders that are always available, regardless of command type ("edit externally" or
@@ -59,10 +63,14 @@ public final class Placeholders {
     LINE0,
     LINE,
     COLUMN0,
-    COLUMN, 
+    COLUMN,
     SELECTED_TEXT,
+    SELECTION_START0,
     SELECTION_START,
+    SELECTION_END0,
     SELECTION_END,
+    SELECTION_END_EXCLUSIVE0,
+    SELECTION_END_EXCLUSIVE,
   };
 
 

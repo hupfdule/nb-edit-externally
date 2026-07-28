@@ -170,19 +170,25 @@ public final class EditExternally implements ActionListener {
         ;
 
       if (cmdType == EDIT_EXTERNALLY_CMD) {
-        final int caret          = editor.getCaretPosition();
-        final int line0          = NbDocument.findLineNumber(sdocument, caret);
-        final int column0        = NbDocument.findLineColumn(sdocument, caret);
-        final String selectedText= editor.getSelectedText();
+        final int    caret          = editor.getCaretPosition();
+        final int    line0          = NbDocument.findLineNumber(sdocument, caret);
+        final int    column0        = NbDocument.findLineColumn(sdocument, caret);
+        final String selectedText   = editor.getSelectedText();
+        final int    selectionStart = editor.getSelectionStart();
+        final int    selectionEnd   = editor.getSelectionEnd();
 
         cmdlineParser
-          .replace(Placeholders.LINE0,           String.valueOf(line0))
-          .replace(Placeholders.LINE,            String.valueOf(line0 + 1))
-          .replace(Placeholders.COLUMN0,         String.valueOf(column0))
-          .replace(Placeholders.COLUMN,          String.valueOf(column0 + 1))
-          .replace(Placeholders.SELECTED_TEXT,   selectedText != null ? selectedText : "")
-          .replace(Placeholders.SELECTION_START, String.valueOf(editor.getSelectionStart()))
-          .replace(Placeholders.SELECTION_END,   String.valueOf(editor.getSelectionEnd()))
+          .replace(Placeholders.LINE0,                    String.valueOf(line0))
+          .replace(Placeholders.LINE,                     String.valueOf(line0 + 1))
+          .replace(Placeholders.COLUMN0,                  String.valueOf(column0))
+          .replace(Placeholders.COLUMN,                   String.valueOf(column0 + 1))
+          .replace(Placeholders.SELECTED_TEXT,            selectedText != null ? selectedText : "")
+          .replace(Placeholders.SELECTION_START0,         selectedText != null ? String.valueOf(selectionStart)     : "-1")
+          .replace(Placeholders.SELECTION_START,          selectedText != null ? String.valueOf(selectionStart + 1) : "-1")
+          .replace(Placeholders.SELECTION_END0,           selectedText != null ? String.valueOf(selectionEnd - 1)   : "-1")
+          .replace(Placeholders.SELECTION_END,            selectedText != null ? String.valueOf(selectionEnd)       : "-1")
+          .replace(Placeholders.SELECTION_END_EXCLUSIVE0, selectedText != null ? String.valueOf(selectionEnd)       : "-1")
+          .replace(Placeholders.SELECTION_END_EXCLUSIVE,  selectedText != null ? String.valueOf(selectionEnd + 1)   : "-1")
           ;
       }
 
