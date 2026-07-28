@@ -236,7 +236,14 @@ public final class EditExternally extends AbstractAction implements ContextAware
         final String msg= Bundle.CTL_Editing_Status(file.getPath());
         StatusDisplayer.getDefault().setStatusText(msg);
 
-        Runtime.getRuntime().exec(command);
+        // Use ProcessBuilder instead of Runtime.exec() and explicitly discard stdout/stderr.
+        // Otherwise, if the started editor writes a nontrivial amount of output (e.g. a
+        // terminal-based editor), the OS pipe buffer can fill up and block the child process
+        // without any indication to the user, since nothing in NetBeans ever reads that output.
+        new ProcessBuilder(command)
+          .redirectOutput(ProcessBuilder.Redirect.DISCARD)
+          .redirectError(ProcessBuilder.Redirect.DISCARD)
+          .start();
       } catch (IOException ex) {
         final String msg = Bundle.CTL_Editing_Error(file.getPath(), ex.getLocalizedMessage());
         StatusDisplayer.getDefault().setStatusText(msg);
