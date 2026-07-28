@@ -212,10 +212,6 @@ public final class EditExternally extends AbstractAction implements ContextAware
         final String selectedText= editor.getSelectedText();
 
         cmdlineParser
-          .replace("${file}", actualFile.getAbsolutePath())
-          .replace("${fileName}", file.getNameExt())
-          .replace("${fileBasename}", file.getName())
-          .replace("${fileExt}", file.getExt())
           .replace("${line0}", String.valueOf(line0))
           .replace("${line}", String.valueOf(line0 + 1))
           .replace("${column0}", String.valueOf(column0))
