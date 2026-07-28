@@ -246,7 +246,11 @@ public final class EditExternally extends AbstractAction implements ContextAware
         // Otherwise, if the started editor writes a nontrivial amount of output (e.g. a
         // terminal-based editor), the OS pipe buffer can fill up and block the child process
         // without any indication to the user, since nothing in NetBeans ever reads that output.
+        //
+        // The working directory is explicitly set to the edited file's directory instead of
+        // leaving it at NetBeans' own (platform-dependent, effectively undefined) working directory.
         new ProcessBuilder(command)
+          .directory(actualFile.getParentFile())
           .redirectOutput(ProcessBuilder.Redirect.DISCARD)
           .redirectError(ProcessBuilder.Redirect.DISCARD)
           .start();
