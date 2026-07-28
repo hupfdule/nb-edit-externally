@@ -17,6 +17,7 @@ package de.poiu.nbee.config;
 
 import de.poiu.nbee.parser.CmdlineParser;
 import de.poiu.nbee.parser.ParseException;
+import de.poiu.nbee.parser.Placeholders;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -40,8 +41,28 @@ final class EditExternallyPanel extends javax.swing.JPanel {
 
   private final EditExternallyOptionsPanelController controller;
 
-  /** Parser to use for validating the command strings. */
-  private final CmdlineParser cmdlineParser= new CmdlineParser();
+  /**
+   * Parser to use for validating the command strings.
+   * <p>
+   * This is only ever used to check for syntax errors (via {@link CmdlineParser#parse}), never
+   * to build an actually executable command. So every known placeholder (see
+   * {@link Placeholders}) is mapped to an arbitrary dummy value here. Otherwise every valid,
+   * known placeholder would be logged as "unmapped" on every keystroke, drowning out the one
+   * case that log message is actually meant to catch: a real, misspelled placeholder in the
+   * command as configured for actual execution in {@code EditExternally}.
+   */
+  private final CmdlineParser cmdlineParser= newValidatingCmdlineParser();
+
+  private static CmdlineParser newValidatingCmdlineParser() {
+    final CmdlineParser parser= new CmdlineParser();
+    for (final String placeholder : Placeholders.ALWAYS_AVAILABLE) {
+      parser.replace(placeholder, "dummyValue");
+    }
+    for (final String placeholder : Placeholders.EDITOR_ONLY) {
+      parser.replace(placeholder, "dummyValue");
+    }
+    return parser;
+  }
 
 
   EditExternallyPanel(EditExternallyOptionsPanelController controller) {
