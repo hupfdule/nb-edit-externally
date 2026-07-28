@@ -19,6 +19,7 @@ import de.poiu.nbee.config.Prefs;
 import de.poiu.nbee.config.Prefs.CmdType;
 import de.poiu.nbee.parser.CmdlineParser;
 import de.poiu.nbee.parser.ParseException;
+import de.poiu.nbee.parser.Placeholders;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -162,10 +163,10 @@ public final class EditExternally implements ActionListener {
       final CmdlineParser cmdlineParser= new CmdlineParser();
 
       cmdlineParser
-        .replace("${file}", actualFile.getAbsolutePath())
-        .replace("${fileName}", file.getNameExt())
-        .replace("${fileBasename}", file.getName())
-        .replace("${fileExt}", file.getExt())
+        .replace(Placeholders.FILE,          actualFile.getAbsolutePath())
+        .replace(Placeholders.FILE_NAME,     file.getNameExt())
+        .replace(Placeholders.FILE_BASENAME, file.getName())
+        .replace(Placeholders.FILE_EXT,      file.getExt())
         ;
 
       if (cmdType == EDIT_EXTERNALLY_CMD) {
@@ -175,13 +176,13 @@ public final class EditExternally implements ActionListener {
         final String selectedText= editor.getSelectedText();
 
         cmdlineParser
-          .replace("${line0}", String.valueOf(line0))
-          .replace("${line}", String.valueOf(line0 + 1))
-          .replace("${column0}", String.valueOf(column0))
-          .replace("${column}", String.valueOf(column0 + 1))
-          .replace("${selectedText}", selectedText != null ? selectedText : "")
-          .replace("${selectionStart}", String.valueOf(editor.getSelectionStart()))
-          .replace("${selectionEnd}", String.valueOf(editor.getSelectionEnd()))
+          .replace(Placeholders.LINE0,           String.valueOf(line0))
+          .replace(Placeholders.LINE,            String.valueOf(line0 + 1))
+          .replace(Placeholders.COLUMN0,         String.valueOf(column0))
+          .replace(Placeholders.COLUMN,          String.valueOf(column0 + 1))
+          .replace(Placeholders.SELECTED_TEXT,   selectedText != null ? selectedText : "")
+          .replace(Placeholders.SELECTION_START, String.valueOf(editor.getSelectionStart()))
+          .replace(Placeholders.SELECTION_END,   String.valueOf(editor.getSelectionEnd()))
           ;
       }
 
