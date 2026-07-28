@@ -1,0 +1,36 @@
+name: Build
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build with Java ${{ matrix.java }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 17 is the minimum required by the compiler release level in pom.xml;
+        # 21 is the current LTS, kept here to catch forward-compatibility issues early.
+        java: [ 17, 21, 25, 26, 27-ea ]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ matrix.java }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: ${{ matrix.java }}
+          cache: maven
+
+      - name: Build and test with Maven
+        run: mvn --batch-mode --no-transfer-progress verify
