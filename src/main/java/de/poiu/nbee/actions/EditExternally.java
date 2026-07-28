@@ -110,7 +110,13 @@ import static de.poiu.nbee.config.Prefs.NETBEANS_PREFS_ID;
   "CTL_Editing_Status=Editing file {0} in external editor",
   "# {0} - the file to be opened",
   "# {1} - the reason for error",
-  "CTL_Editing_Error=Error opening external editor for {0}: {1}"})
+  "CTL_Editing_Error=Error opening external editor for {0}: {1}",
+  "MSG_NoCommand_Edit=<html>No command to edit file externally is defined yet.<br/>Open configuration panel now?</html>",
+  "MSG_NoCommand_Open=<html>No command to open file externally is defined yet.<br/>Open configuration panel now?</html>",
+  "# {0} - the reason the configured command could not be parsed",
+  "MSG_InvalidCommand_Edit=<html>The configured command to edit file externally is invalid:<br/>{0}<br/>Open configuration panel now?</html>",
+  "# {0} - the reason the configured command could not be parsed",
+  "MSG_InvalidCommand_Open=<html>The configured command to open file externally is invalid:<br/>{0}<br/>Open configuration panel now?</html>"})
 public final class EditExternally extends AbstractAction implements ContextAwareAction, LookupListener {
 
   private static final Logger LOGGER= Logger.getLogger(EditExternally.class.getName());
@@ -264,8 +270,9 @@ public final class EditExternally extends AbstractAction implements ContextAware
    * @param cmdType the command type that is not configured yet
    */
   private void openOptionsPanel(final CmdType cmdType) {
-    final String action= cmdType == EDIT_EXTERNALLY_CMD ? "edit" : "open";
-    final String msg          = "<html>No command to "+action+" file externally is defined yet.<br/>Open configuration panel now?</html>";
+    final String msg= cmdType == EDIT_EXTERNALLY_CMD
+      ? Bundle.MSG_NoCommand_Edit()
+      : Bundle.MSG_NoCommand_Open();
     this.confirmAndOpenOptionsPanel(msg);
   }
 
@@ -284,9 +291,9 @@ public final class EditExternally extends AbstractAction implements ContextAware
    */
   private void openOptionsPanelForInvalidCommand(final CmdType cmdType, final ParseException ex) {
     LOGGER.log(Level.WARNING, "Configured command for " + cmdType + " could not be parsed", ex);
-    final String action       = cmdType == EDIT_EXTERNALLY_CMD ? "edit" : "open";
-    final String msg          = "<html>The configured command to "+action+" file externally is invalid:<br/>"
-                                + ex.getLocalizedMessage() + "<br/>Open configuration panel now?</html>";
+    final String msg= cmdType == EDIT_EXTERNALLY_CMD
+      ? Bundle.MSG_InvalidCommand_Edit(ex.getLocalizedMessage())
+      : Bundle.MSG_InvalidCommand_Open(ex.getLocalizedMessage());
     this.confirmAndOpenOptionsPanel(msg);
   }
 
