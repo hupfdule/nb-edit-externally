@@ -14,11 +14,16 @@ jobs:
   build:
     name: Build with Java ${{ matrix.java }}
     runs-on: ubuntu-latest
+    # JDK 27 is still pre-release (EA); don't let its inherent pre-GA instability fail the
+    # overall check. The stable JDKs (17/21/25/26) remain fully required.
+    continue-on-error: ${{ matrix.java == '27-ea' }}
     strategy:
       fail-fast: false
       matrix:
         # 17 is the minimum required by the compiler release level in pom.xml;
-        # 21 is the current LTS, kept here to catch forward-compatibility issues early.
+        # 21/25 are the current LTS releases, 26 the current short-term release, and 27-ea an
+        # early-access preview of the next release. All kept here to catch
+        # forward-compatibility issues early.
         java: [ 17, 21, 25, 26, 27-ea ]
 
     steps:
