@@ -96,15 +96,7 @@ final class EditExternallyPanel extends javax.swing.JPanel {
     if (errorMessages.isEmpty()) {
       this.lblErrorMessages.setText("");
     } else {
-      final StringBuilder sb= new StringBuilder();
-      sb.append("<html>");
-      for (final String errorMsg : errorMessages) {
-        sb.append(errorMsg);
-        sb.append("<br/>");
-      }
-      sb.delete(sb.length() - 5, sb.length()); // delete the last <br/>
-      sb.append("</html>");
-      this.lblErrorMessages.setText(sb.toString());
+      this.lblErrorMessages.setText("<html>" + String.join("<br/>", errorMessages) + "</html>");
     }
   }
 
