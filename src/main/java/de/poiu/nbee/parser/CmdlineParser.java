@@ -83,9 +83,9 @@ public class CmdlineParser {
   /**
    * Constructs a new CmdlineParser with the given replacement mappings.
    * <p>
-   * The given map must contain the placeholders as values and the replacement strings as values.
+   * The given map must contain the placeholders as keys and the replacement strings as values.
    * <p>
-   * The placeholder <i>must</i> contain the surrounding <code>${}</code>. Therefore set it as
+   * The placeholder <i>must</i> contain the surrounding <code>${}</code>. Therefore do not set it as
    * <code>replacementMap.put("file", "/path/to/file");</code>
    * but instead
    * <code>replacementMap.put("${file}", "/path/to/file");</code>   *
