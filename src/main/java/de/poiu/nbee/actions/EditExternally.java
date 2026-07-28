@@ -20,13 +20,13 @@ import de.poiu.nbee.config.Prefs.CmdType;
 import de.poiu.nbee.parser.CmdlineParser;
 import de.poiu.nbee.parser.ParseException;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.JEditorPane;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.StyledDocument;
@@ -44,15 +44,9 @@ import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataObject;
 import org.openide.loaders.DataShadow;
 import org.openide.text.NbDocument;
-import org.openide.util.ContextAwareAction;
 import org.openide.util.Exceptions;
-import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
 import org.openide.util.NbBundle.Messages;
-import org.openide.util.Utilities;
-import org.openide.util.WeakListeners;
 
 import static de.poiu.nbee.config.Prefs.CmdType.EDIT_EXTERNALLY_CMD;
 import static de.poiu.nbee.config.Prefs.CmdType.OPEN_EXTERNALLY_CMD;
@@ -71,16 +65,18 @@ import static de.poiu.nbee.config.Prefs.NETBEANS_PREFS_ID;
  * If the cursor position is not known for the current file, the "open externally" command is used
  * that doesn't support location information to be configured.
  * <p>
- * Implementation note: this class tracks its own enabled state directly against
- * <code>Utilities.actionsGlobalContext()</code> by default, because NetBeans binds the
- * plain no-arg-constructed instance directly to the toolbar/menu placements
- * (<code>Toolbars/File</code>, <code>Editors/Toolbars/Default</code>, <code>UI/ToolActions/Files</code>)
- * without ever calling {@link #createContextAwareInstance(org.openide.util.Lookup)} for those
- * spots -- that method is only consulted by NetBeans' node-popup building code
- * (<code>Utilities.actionsToPopup</code>), i.e. for right-click context menus. Implementing
- * {@link ContextAwareAction} is kept anyway since it improves correctness for those popups
- * (they get the actually clicked node's lookup instead of the global selection), but the
- * default/global tracking must not depend on it being called.
+ * Implementation note: this uses NetBeans' declarative context-action recipe (a constructor
+ * taking a {@code List<DataObject>} plus implementing plain {@link ActionListener}) instead of
+ * hand-rolling {@code AbstractAction implements ContextAwareAction, LookupListener}. The
+ * {@code @ActionRegistration} annotation processor recognizes this constructor shape and
+ * registers the action via {@link org.openide.awt.Actions#context}, which already tracks
+ * {@code Utilities.actionsGlobalContext()} correctly for every placement (toolbar, menu, and
+ * popup alike) on its own. This sidesteps the previous problem where NetBeans bound an eagerly
+ * instantiated, no-arg-constructed action instance directly to the toolbar/menu placements
+ * without ever calling {@code createContextAwareInstance(Lookup)}. That special case no longer
+ * needs to be worked around by hand, since there is no no-arg-constructed instance in this recipe
+ * to begin with. The (at least) one selected {@code DataObject} required for this action to even
+ * be enabled is delivered directly as this constructor's argument.
  *
  * @author Marco Herrn
  */
@@ -89,12 +85,8 @@ import static de.poiu.nbee.config.Prefs.NETBEANS_PREFS_ID;
   id = "de.poiu.nbee.EditExternally"
 )
 @ActionRegistration(
-  // iconBase could be omitted, since it is unused on eager (lazy=false) registrations -- the icon is
-  // set programmatically via putValue(Action.SMALL_ICON, ...) in the constructor instead.
-  // We leave it here as we do with displayName, anyway.
   iconBase = "de/poiu/nbee/icons/edit-externally.png",
-  displayName = "#CTL_EditExternally",
-  lazy = false // we need the action object to exist from the start to track the global selection lookup
+  displayName = "#CTL_EditExternally"
 )
 @ActionReferences({
 //  @ActionReference(path = "Menu/Tools", position = 0), //redundant if "UI/ToolActions/Files" is registered
@@ -117,54 +109,19 @@ import static de.poiu.nbee.config.Prefs.NETBEANS_PREFS_ID;
   "MSG_InvalidCommand_Edit=<html>The configured command to edit file externally is invalid:<br/>{0}<br/>Open configuration panel now?</html>",
   "# {0} - the reason the configured command could not be parsed",
   "MSG_InvalidCommand_Open=<html>The configured command to open file externally is invalid:<br/>{0}<br/>Open configuration panel now?</html>"})
-public final class EditExternally extends AbstractAction implements ContextAwareAction, LookupListener {
+public final class EditExternally implements ActionListener {
 
   private static final Logger LOGGER= Logger.getLogger(EditExternally.class.getName());
 
-  private final Lookup                    context;
-  private final Lookup.Result<DataObject> lookupResult;
-
-
-  public EditExternally() {
-    this(Utilities.actionsGlobalContext());
-  }
-
-
-  private EditExternally(final Lookup context) {
-    super(Bundle.CTL_EditExternally());
-    // Unfortunately we need to explicitly set the Icon and Tooltip text if we are using an Action instead of just an ActionListener.
-    this.putValue(Action.SMALL_ICON, ImageUtilities.loadImageIcon("de/poiu/nbee/icons/edit-externally.png", false));
-    this.putValue(Action.SHORT_DESCRIPTION, Bundle.CTL_EditExternally());
-    this.context     = context;
-    this.lookupResult= context.lookupResult(DataObject.class);
-    this.lookupResult.addLookupListener(WeakListeners.create(LookupListener.class, this, this.lookupResult));
-    this.updateEnabledState();
-  }
-
-
-  @Override
-  public void resultChanged(LookupEvent ev) {
-    this.updateEnabledState();
-  }
-
-
   /**
-   * Updates the enabled state of this action based on whether a <code>DataObject</code>
-   * is available in this instance's lookup context.
+   * The currently selected DataObjects this action was invoked on. NetBeans only enables (and
+   * thus only ever invokes) this action when this list is non-empty; see the class-level note.
    */
-  private void updateEnabledState() {
-    this.setEnabled(!this.lookupResult.allInstances().isEmpty());
-  }
+  private final List<DataObject> context;
 
 
-  /**
-   * Consulted by NetBeans' node-popup building code (right-click context menus) to obtain an
-   * instance bound to the lookup of the actually clicked node, instead of the global selection.
-   * Not consulted for the toolbar/menu-bar placements; see the class-level note.
-   */
-  @Override
-  public Action createContextAwareInstance(Lookup context) {
-    return new EditExternally(context);
+  public EditExternally(final List<DataObject> context) {
+    this.context= context;
   }
 
 
@@ -172,14 +129,14 @@ public final class EditExternally extends AbstractAction implements ContextAware
   public void actionPerformed(ActionEvent ev) {
     LOGGER.entering("EditExternally", "actionPerformed", ev);
 
-    final DataObject dataObject= this.getCurrentDataObject();
+    final DataObject dataObject= this.context.isEmpty() ? null : this.context.get(0);
     final FileObject file      = this.getFileObjectFrom(dataObject);
     if (file == null) {
       LOGGER.log(Level.INFO, "Ignoring execution request, since no current file was found");
       return;
     }
 
-    final JTextComponent editor= getCurrentEditor();
+    final JTextComponent editor= getCurrentEditor(dataObject);
     final StyledDocument sdocument = editor != null ? (StyledDocument) editor.getDocument() : null;
 
     final CmdType cmdType;
@@ -187,7 +144,7 @@ public final class EditExternally extends AbstractAction implements ContextAware
       LOGGER.log(Level.INFO, "Calling 'open external' command since no current editor was found.");
       cmdType= OPEN_EXTERNALLY_CMD;
     } else if (sdocument == null) {
-      LOGGER.log(Level.INFO, "Calling 'open external' command since current editors document doesn't contain a StyledDocument, but instead a {0}.", editor.getDocument().getClass());
+      LOGGER.log(Level.INFO, "Calling 'open external' command since the current editor's document is not a StyledDocument.");
       cmdType= OPEN_EXTERNALLY_CMD;
     } else {
       LOGGER.log(Level.INFO, "Calling 'edit external' command with location information of current editor");
@@ -319,15 +276,6 @@ public final class EditExternally extends AbstractAction implements ContextAware
 
 
   /**
-   * Returns the current DataObject.
-   * @return the current DataObject
-   */
-  private DataObject getCurrentDataObject() {
-    return this.context.lookup(DataObject.class);
-  }
-
-
-  /**
    * Returns the actual <code>FileObject</code> for the given <code>DataObject</code>
    * @param dataObject the <code>DataObject</code> for which to return the <code>FileObject</code>
    * @return the <code>FileObject</code> for the given <code>DataObject</code>
@@ -346,27 +294,20 @@ public final class EditExternally extends AbstractAction implements ContextAware
 
 
   /**
-   * Tries to find the current editor.
+   * Tries to find the current editor for the given <code>DataObject</code>.
    * <p>
-   * If no current editor can be found for the currently selected file (or node), <code>null</code>
-   * is returned
+   * If no current editor can be found, <code>null</code> is returned.
    *
+   * @param dataObject the <code>DataObject</code> for which to find the current editor
    * @return the current editor or <code>null</code> if no editor could be found.
    */
-  private JTextComponent getCurrentEditor() {
-    final EditorCookie ec= this.context.lookup(EditorCookie.class);
+  private JTextComponent getCurrentEditor(final DataObject dataObject) {
+    final EditorCookie ec= dataObject.getLookup().lookup(EditorCookie.class);
     if (ec == null) {
-      LOGGER.log(Level.INFO, "No EditorCookie found in the current context");
+      LOGGER.log(Level.INFO, "No EditorCookie found for the current DataObject");
       return null;
     }
 
-    // FIXME: This is disabled, since NbDocument.findRecentEditorPane() doesn't always return an
-    //        editor. For example after restarting netbeans, it returns null, even though the
-    //        selected node has an open editor somewhere.
-//    final JEditorPane editorPane= NbDocument.findRecentEditorPane(ec);
-//    if (editorPane != null) {
-//      return editorPane;
-//    }
     final JEditorPane[] editorPanes = ec.getOpenedPanes();
     if (editorPanes == null || editorPanes.length == 0) {
       return null;
