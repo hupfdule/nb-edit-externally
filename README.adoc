@@ -1,4 +1,4 @@
-Netbeans Edit Externally
+NetBeans Edit Externally                                                        r
 =======================
 Marco Herrn <marco@mherrn.de>
 2019-08-22
@@ -6,11 +6,11 @@ Marco Herrn <marco@mherrn.de>
 :homepage: https://github.com/hupfdule/nb-edit-externally
 :download-page: https://github.com/hupfdule/nb-edit-externally/releases
 :issue-tracker: https://github.com/hupfdule/nb-edit-externally/issues
+:wiki: https://github.com/hupfdule/nb-edit-externally/wiki
 :license-link: https://github.com/hupfdule/nb-edit-externally/blob/master/LICENSE.txt
 :source-highlighter: prettify
-:plugin-version: 1.0.0
 
-Netbeans Edit Externally
+NetBeans Edit Externally
 
 Allows opening the currently edited file in an external editor.
 
@@ -18,33 +18,36 @@ Allows opening the currently edited file in an external editor.
 About
 -----
 
-Allows opening the currently edited file in an external editor.
-
 Its main purpose is to open the currently edited file at the exact same cursor
-position as in Netbeans to execute some complex editing action that is not
-easily possible within Netbeans itself.
+position as in NetBeans to execute some complex editing action that is not
+easily possible within NetBeans itself.
 
 The command to open the file in an external editor must be supplied by the
 user and allows placeholders to specify the location of the cursor to be
-able to jump to the same location of the cursor in Netbeans' editor.
+able to jump to the same location of the cursor in NetBeans' editor.
 
-A fallback command can be specified for opening file for which no editor
+A fallback command can be specified for opening a file for which no editor
 window is open. This command doesn't support all the placeholders, but
 allows editing a file directly from the Projects nodes.
+
+Since version 2.0.0 this plugin also exposes values related to selected
+text. This can be used to preselect the same text in the external editor if
+that editor supports such a use case.
 
 
 Usage
 -----
 
-This plugin adds an Entry `Edit Externally` to the following menus:
+This plugin adds an entry `Edit Externally` to the following menus:
 
  * Main Menu `Tools`
  * Context Menu of each editor window
  * Submenu `Tools` in the context popup menu of each node in the Projects view
 
 Additionally an icon is placed in the `File` section of the main toolbar
-and into the editors toolbar:
+and into the editor's toolbar:
 image:src/main/resources/de/poiu/nbee/icons/edit-externally32.png[Icon]
+
 
 Configuration
 -------------
@@ -76,6 +79,10 @@ ${fileName}::     The file name of the file.
 ${fileBasename}:: The file name of the file without extension.
 ${fileExt}::      The file extension of the file.
 
+These values always refer to the currently selected file in the editor
+window or, when using the context menu entry in the navigation tree, the
+file selected in the tree.
+
 The following placeholders can additionally be used for the
 `Edit externally` action:
 
@@ -90,7 +97,25 @@ ${selectionStart}::         The location of the first character of a selection (
 ${selectionEnd0}::          The location of the last character of a selection (number of chars in the file, 0-based) or -1 if no text is selected.
 ${selectionEnd}::           The location of the last character of a selection (number of chars in the file, 1-based) or -1 if no text is selected.
 ${selectionEndExclusive0}:: The location of the first character _after_ the selection (number of chars in the file, 0-based) or -1 if no text is selected.
-${selectionEndExclusive}::  The location of the first character _after_ the selection (number of chars in the file, 0-based) or -1 if no text is selected.
+${selectionEndExclusive}::  The location of the first character _after_ the selection (number of chars in the file, 1-based) or -1 if no text is selected.
+
+All numeric values are provided in two different flavours, 0-based and
+1-based. Use the one more appropriate for your use case. It makes the code
+more readable than having to add or subtract 1 from its values.
+
+The line and column placeholders are always filled (if there is an open
+editor window for the corresponding file) as the cursor will always be on a
+certain position in the file.\
+All the remaining placeholders (related to text selection) are only filled
+if there actually is selected text. If not, `${selectedText}` will be an
+empty string; all the others will have the value -1.
+
+The end of the selection is also available in an inclusive and an exclusive
+form. The inclusive form specifies the cursor position of the last selected
+character. For a single selected character it would be the same value as
+the start of the selection. The exclusive form specifies the character
+position _after_ the last selected character. For a single selected
+character it would be the start of the selection + 1.
 
 
 === Quoting and Escaping
@@ -99,8 +124,10 @@ To allow command line arguments with spaces they can be enclosed within
 single or double quotes. It is also possible to escape a single space or
 quote character by preceding it with a backslash.
 
-Backslashes take precedence over quote. Therefore it is possible to have
-quotes as part of a quoted string like in this example:
+Backslashes take precedence over quotes. Therefore it is possible to have
+quotes as part of a quoted string like in this example footnote:[In that
+exact example it would be easier and more readable to instead alternate
+single and double quotes: `myprogram 'my "quoted" string'`]:
 
 ----
 myprogram 'my \'quoted\' string'
@@ -122,25 +149,17 @@ used:
 Edit externally:: `urxvt -e vim ${file} "+call cursor(${line}, ${column})"`
 Open externally:: `urxvt -e vim ${file}`
 
-Since file paths under MS Windows usually use the backslash as file
-separator, those must be escaped by additional backslashes:
+More examples can be found in {wiki}[the Wiki].
 
-----
-"C:\\Program Files\\Notepad++\\notepad++.exe" -multiInst -n${line} -c${column} "${file}"
-----
-
-An easier, and more readable, approach is using a forward slash as path
-separator:
-
-----
-"C:/Program Files/Notepad++/notepad++.exe" -multiInst -n${line} -c${column} "${file}"
-----
+The Wiki is made for collaboration. Please add more examples for other
+editors or provide additional tricks on how to utilize this plugin the
+best.
 
 
 === Keybindings
 
-This plugin registers an action with the name „Edit Externally“ in
-Netbeans. It is recommended to provide a custom keybinding for that action
+This plugin registers an action with the name "Edit Externally" in
+NetBeans. It is recommended to provide a custom keybinding for that action
 for faster access.
 
 
@@ -159,21 +178,21 @@ Related plugins
 This plugin is inspired by the following existing plugins.
 
 QuickOpener::
-  http://plugins.netbeans.org/plugin/62668/quickopener
+  https://github.com/Chris2011/QuickOpener-NetBeans
 +
-This plugin shares some of the same ideas and does provides some
+This plugin shares some of the same ideas and does provide some
 additional actions. Unfortunately it is quite buggy and not very handy.
 
 Use System Desktop::
-  http://plugins.netbeans.org/plugin/57462/netbeans-use-system-desktop
+  https://github.com/manikantannaren/mynetbeans/tree/master/NB-Use-System-Desktop
 +
 This plugin provides actions to open the currently selected file via the
-operating systems default application. It lacks the ability to jump to a
+operating system's default application. It lacks the ability to jump to a
 specific cursor location, but may be used together with `Edit Externally`.
 
 
 License
 -------
 
-This plugins is licensed under the terms of the link:{license-link}[Apache license
+This plugin is licensed under the terms of the link:{license-link}[Apache License
 2.0].
