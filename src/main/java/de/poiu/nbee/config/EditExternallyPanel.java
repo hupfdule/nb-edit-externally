@@ -25,6 +25,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 import org.openide.util.Lookup;
+import org.openide.util.NbBundle.Messages;
 
 import static de.poiu.nbee.config.Prefs.CmdType.EDIT_EXTERNALLY_CMD;
 import static de.poiu.nbee.config.Prefs.CmdType.OPEN_EXTERNALLY_CMD;
@@ -35,9 +36,21 @@ import static de.poiu.nbee.config.Prefs.CmdType.OPEN_EXTERNALLY_CMD;
  *
  * @author Marco Herrn
  */
+@Messages({
+  "# {0} - the comma-separated list of unknown placeholders found",
+  "MSG_UnknownPlaceholders=Unknown placeholder(s), will be included literally: {0}"})
 final class EditExternallyPanel extends javax.swing.JPanel {
 
   private static final Logger LOGGER= Logger.getLogger(EditExternallyPanel.class.getName());
+
+  /** Text color for real syntax errors (a command that can't be parsed at all). */
+  private static final String COLOR_ERROR= "#CC0000";
+
+  /**
+   * Text color for warnings (a command that parses fine but contains an unknown placeholder,
+   * which will simply be included literally when the command is actually executed).
+   */
+  private static final String COLOR_WARNING= "#B8860B";
 
   private final EditExternallyOptionsPanelController controller;
 
@@ -102,23 +115,31 @@ final class EditExternallyPanel extends javax.swing.JPanel {
 
   private void updateErrorMessages() {
     //FIXME: Run error checks in background and trigger validation here?
-    final List<String> errorMessages= new ArrayList<>();
+    final List<String> messages= new ArrayList<>();
     for (final JTextComponent c : new JTextComponent[]{
       this.tfEditExternallyCmd,
       this.tfOpenExternallyCmd,
     }) {
       try {
-        this.cmdlineParser.parse(c.getText().trim());
+        final CmdlineParser.ParseResult result= this.cmdlineParser.parseDetailed(c.getText().trim());
+        if (!result.unmappedPlaceholders().isEmpty()) {
+          messages.add(colored(COLOR_WARNING, Bundle.MSG_UnknownPlaceholders(String.join(", ", result.unmappedPlaceholders()))));
+        }
       } catch (Exception ex) {
-        errorMessages.add(ex.getMessage());
+        messages.add(colored(COLOR_ERROR, ex.getMessage()));
       }
     }
 
-    if (errorMessages.isEmpty()) {
+    if (messages.isEmpty()) {
       this.lblErrorMessages.setText("");
     } else {
-      this.lblErrorMessages.setText("<html>" + String.join("<br/>", errorMessages) + "</html>");
+      this.lblErrorMessages.setText("<html>" + String.join("<br/>", messages) + "</html>");
     }
+  }
+
+
+  private static String colored(final String color, final String message) {
+    return "<span style=\"color:" + color + ";\">" + message + "</span>";
   }
 
 
@@ -141,7 +162,6 @@ final class EditExternallyPanel extends javax.swing.JPanel {
 
     tfEditExternallyCmd.setText(org.openide.util.NbBundle.getMessage(EditExternallyPanel.class, "EditExternallyPanel.tfEditExternallyCmd.text")); // NOI18N
 
-    lblErrorMessages.setForeground(new java.awt.Color(255, 0, 0));
     org.openide.awt.Mnemonics.setLocalizedText(lblErrorMessages, org.openide.util.NbBundle.getMessage(EditExternallyPanel.class, "EditExternallyPanel.lblErrorMessages.text")); // NOI18N
 
     org.openide.awt.Mnemonics.setLocalizedText(lblOpenExternallyCmd, org.openide.util.NbBundle.getMessage(EditExternallyPanel.class, "EditExternallyPanel.lblOpenExternallyCmd.text")); // NOI18N

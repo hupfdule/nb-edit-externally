@@ -18,8 +18,10 @@ package de.poiu.nbee.parser;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -51,13 +53,42 @@ import java.util.logging.Logger;
  * Certain placeholders can be replaced in the given command line string. The placeholders must be
  * enclosed in <code>${</code> and <code>}</code> characters. If the given command line string
  * contains placeholders for which no replacement string was defined, it will be included literally
- * in the parsed command line.
+ * in the parsed command line. Which placeholders (if any) this happened for can be queried via
+ * {@link #parseDetailed}, which -- unlike {@link #parse} -- returns that information directly
+ * alongside the parsed command line, rather than as separate, order-dependent state on this
+ * object.
  *
  * @author Marco Herrn
  */
 public class CmdlineParser {
 
   private static final Logger LOGGER= Logger.getLogger(CmdlineParser.class.getName());
+
+  /**
+   * The result of {@link #parseDetailed}: the parsed command line, together with the
+   * placeholders (if any) for which no replacement mapping was defined, in the order they were
+   * first encountered. Immutable.
+   *
+   * @param command the parsed command line, suitable for {@link ProcessBuilder}
+   * @param unmappedPlaceholders the placeholders left unreplaced, in encounter order
+   */
+  public record ParseResult(String[] command, List<String> unmappedPlaceholders) {
+    public ParseResult {
+      command= command.clone();
+      unmappedPlaceholders= List.copyOf(unmappedPlaceholders);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Returns a defensive copy on every call, since arrays are inherently mutable and this
+     * record cannot otherwise guarantee its own immutability.
+     */
+    @Override
+    public String[] command() {
+      return this.command.clone();
+    }
+  }
 
   private static enum Mode {
     /** The normal parse mode. */
@@ -136,13 +167,36 @@ public class CmdlineParser {
   /**
    * Parse a command line string into a String array suitable to be feeded to
    * {@link Runtime#exec(java.lang.String[])} for execution.
+   * <p>
+   * This is a convenience shorthand for <code>parseDetailed(cmdLine).command()</code>, for
+   * callers that don't care about which (if any) placeholders were left unmapped. See
+   * {@link #parseDetailed} for those.
    *
    * @param cmdLine the command line string to pares
    * @return the parsed command line string
    * @throws ParseException if the given string cannot be parsed in as a valid command line
    */
   public String[] parse(final CharSequence cmdLine) {
+    return this.parseDetailed(cmdLine).command();
+  }
+
+
+  /**
+   * Parse a command line string into a String array suitable to be feeded to
+   * {@link Runtime#exec(java.lang.String[])} for execution, together with the placeholders (if
+   * any) that had no replacement mapping defined and were therefore included literally.
+   * <p>
+   * This method has no side effects on this CmdlineParser beyond reading its configured
+   * {@link #replace replacement mappings} -- calling it repeatedly, including concurrently from
+   * different threads, never changes what a later call returns for the same input.
+   *
+   * @param cmdLine the command line string to pares
+   * @return the parsed command line together with any unmapped placeholders found while parsing it
+   * @throws ParseException if the given string cannot be parsed in as a valid command line
+   */
+  public ParseResult parseDetailed(final CharSequence cmdLine) {
     final List<String> parsedCmdLine= new ArrayList<>();
+    final Set<String> unmappedPlaceholders= new LinkedHashSet<>();
 
     final StringBuilder sb= new StringBuilder();
     Character quoteChar= null;
@@ -210,7 +264,7 @@ public class CmdlineParser {
             // end REPLACE mode
             sbPlaceholder.append(c);
             mode= Mode.PARSE;
-            sb.append(replace(sbPlaceholder.toString()));
+            sb.append(replace(sbPlaceholder.toString(), unmappedPlaceholders));
             sbPlaceholder.delete(0, sbPlaceholder.length());
           } else {
             sb.append(c);
@@ -239,7 +293,7 @@ public class CmdlineParser {
       parsedCmdLine.add(sb.toString());
     }
 
-    return parsedCmdLine.toArray(new String[parsedCmdLine.size()]);
+    return new ParseResult(parsedCmdLine.toArray(new String[parsedCmdLine.size()]), List.copyOf(unmappedPlaceholders));
   }
 
 
@@ -248,16 +302,19 @@ public class CmdlineParser {
    * <p>
    * If no replacement is defined in the {@link #replacements replacements map} of this
    * CmdlineParser, the placeholder will be returned as given (to be included literally in the
-   * parsed command line.
+   * parsed command line, and added to <code>unmappedPlaceholders</code>).
    *
    * @param placeholder the placeholder for which to return the replacement string
+   * @param unmappedPlaceholders the (call-local) collection to add {@code placeholder} to if no
+   *                              replacement mapping is defined for it
    * @return the replacement string or the placeholder itself if not replacement mapping is defined
    */
-  private CharSequence replace(final String placeholder) {
+  private CharSequence replace(final String placeholder, final Set<String> unmappedPlaceholders) {
     if (this.replacements.containsKey(placeholder)) {
       return this.replacements.get(placeholder);
     } else {
       LOGGER.log(Level.WARNING, "No replacement mapping found for placeholder {0}. Including it literally in the command.", placeholder);
+      unmappedPlaceholders.add(placeholder);
       return placeholder;
     }
   }
