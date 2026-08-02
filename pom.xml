@@ -199,6 +199,11 @@
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jarsigner-plugin</artifactId>
+          <version>3.1.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
           <version>3.3.1</version>
         </plugin>
@@ -246,6 +251,11 @@
         <groupId>org.apache.netbeans.utilities</groupId>
         <artifactId>nbm-maven-plugin</artifactId>
         <extensions>true</extensions>
+        <configuration>
+          <keystore>${nbm.keystore}</keystore>
+          <keystorealias>${nbm.keystorealias}</keystorealias>
+          <keystorepassword>${nbm.keystorepass}</keystorepassword>
+        </configuration>
       </plugin>
 
       <plugin>
@@ -305,6 +315,63 @@
                 <goals>
                   <goal>jar-no-fork</goal>
                 </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>require-nbm-signing-properties</id>
+                <!-- Runs before nbm:nbm (bound to the package phase), so a missing property
+                     fails fast instead of only being noticed as a silent "not signed" warning
+                     deep into the build. This alone is NOT sufficient (a typo'd but non-empty
+                     keystore path still passes this check). See the maven-jarsigner-plugin
+                     execution below, which is the actual guarantee. -->
+                <phase>validate</phase>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+                <configuration>
+                  <rules>
+                    <requireProperty>
+                      <property>nbm.keystore</property>
+                      <regex>.+</regex>
+                      <message>nbm.keystore is not set. The release NBM would be built unsigned. Set it in ~/.m2/settings.xml or pass -Dnbm.keystore=... .</message>
+                    </requireProperty>
+                    <requireProperty>
+                      <property>nbm.keystorealias</property>
+                      <regex>.+</regex>
+                      <message>nbm.keystorealias is not set. Release NBM would be built unsigned. Set it in ~/.m2/settings.xml or pass -Dnbm.keystorealias=... .</message>
+                    </requireProperty>
+                    <requireProperty>
+                      <property>nbm.keystorepass</property>
+                      <regex>.+</regex>
+                      <message>nbm.keystorepass is not set. Release NBM would be built unsigned. Set it in ~/.m2/settings.xml or pass -Dnbm.keystorepass=... .</message>
+                    </requireProperty>
+                  </rules>
+                  <fail>true</fail>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jarsigner-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>verify-nbm-is-signed</id>
+                <!-- Verify that the gerenated nbm file is actually signed.
+                     This is necessary as the maven-nmb plugin nearly silently skips signing if not
+                     all relevant properties are set or the keystore cannot be found for some reason. -->
+                <goals>
+                  <goal>verify</goal>
+                </goals>
+                <configuration>
+                  <archive>${project.build.directory}/nbm/${project.artifactId}-${project.version}.nbm</archive>
+                  <errorWhenNotSigned>true</errorWhenNotSigned>
+                </configuration>
               </execution>
             </executions>
           </plugin>
