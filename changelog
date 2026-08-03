@@ -1,14 +1,60 @@
-Netbeans Edit Externally changelog
+NetBeans Edit Externally changelog
 ==================================
 
 
-Version 1.0.1 - 2018-08-15
+Version 2.0.0 - 2026-08-03
 --------------------------
 
-  - Fix escaping of paths under MS Windows(#1)
+	- [BREAKING] Explicitly specify position of menu items
+		- This leads to a different menu item ordering
+	- [BREAKING] Explicitly set the parent folder of the edited file as working
+		directory.
+		- This should not have any influence on most users may lead to a
+			different behaviour in the editor (different relative file paths,
+			location of temporary files, etc.)
+	- Provide new placeholders for the selected text.
+		- Such placeholders already were implemented, but intentionally not
+			documented. They are now refined and ready for public use.
+	- Do not activate plugin if no file is selected
+	- Fix parsing bug of literal dollar sign
+	- Fix possible lockup if called external command produces a lot of output
+		on stdout/stderr
+	- Refer for online help to the GitHub README
+		- The old approach via JavaHelp wasn't working in Apache NetBeans
+		anymore anyway
+	- Emit warning message for unknown placeholders (may be a typo)
+	- Do not clutter the logfile with info messages when validating
+		commandlines
+	- The GitHub repository now provides a wike page for documenting
+		commandlines to be used with this plugin.
 
 
-Version 1.0.0 - 2018-08-12
+Version 1.0.4 - 2026-07-02
 --------------------------
 
-  - Initial release
+	- Fix bug in parsing commandline message
+	- Drop support for Java < 17
+
+
+Version 1.0.3 - 2024-04-04
+--------------------------
+
+	- Correct wording of two messages
+
+
+Version 1.0.2 - 2024-04-02
+--------------------------
+
+	- Changed Apache NetBeans Plugin Portal
+
+
+Version 1.0.1 - 2019-08-15
+--------------------------
+
+	- Fix escaping of paths under MS Windows(#1)
+
+
+Version 1.0.0 - 2019-08-12
+--------------------------
+
+	- Initial release
