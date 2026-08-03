@@ -1,5 +1,5 @@
-NetBeans Edit Externally                                                        r
-=======================
+NetBeans Edit Externally
+========================
 Marco Herrn <marco@mherrn.de>
 2019-08-22
 :toc:
