@@ -34,6 +34,8 @@ Since version 2.0.0 this plugin also exposes values related to selected
 text. This can be used to preselect the same text in the external editor if
 that editor supports such a use case.
 
+image:doc/nbee-in-action.png[nb-edit-externally in Action]
+
 
 Usage
 -----
@@ -54,6 +56,8 @@ Configuration
 
 The configuration panel can be found at
 `Tools / Options / Miscellaneous / Edit Externally`.
+
+image:doc/nbee-configpanel.png[Options Panel]
 
 There are two commands to be configured:
 
